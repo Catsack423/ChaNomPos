@@ -5,7 +5,7 @@
 
 .productcols {
     grid-template-columns: 1.4fr 0.9fr;
-    max-width: 70%; 
+    max-width: 1100px; 
     margin: 20px auto; 
     padding: 0 16px;
     

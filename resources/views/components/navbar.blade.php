@@ -26,7 +26,7 @@
                 </button>
             </form>
 
-            @if (auth()->check() && auth()->user()->is_admin)
+            @if (auth()->check() && auth()->user()->admin)
               <button class="tab" data-target="admin">Admin</button>
             @endif
             <button class="tab active" data-target="user">Staff</button>

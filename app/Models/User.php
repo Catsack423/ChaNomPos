@@ -27,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin',
     ];
 
     /**
@@ -58,4 +59,14 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function getEmailAddressAttribute()
+    {
+        return $this->email;
+    }
+
+    public function getadminAttribute()
+    {
+        return  $this->attributes['admin'] ?? null;
+    }
 }

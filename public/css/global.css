@@ -1,0 +1,51 @@
+:root {
+    --primary: #7B4A2E;
+    --secondary: #F5D7B2;
+    --accent: #C97C5D;
+    --success: #4CAF50;
+    --danger: #F44336;
+    --text: #2E2E2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --card: #ffffff;
+    --bg: #FFF9F2;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    --radius: 14px;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--bg), #fff);
+
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    /* บังคับให้ body สูงเต็มจอเสมอ */
+}
+
+a {
+    color: inherit;
+    text-decoration: none
+}
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+}
+
+.card h2 {
+    margin: 0 0 10px;
+    font-size: 20px
+}

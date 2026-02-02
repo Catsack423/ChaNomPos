@@ -1,0 +1,48 @@
+:root {
+    --btn-primary: #8B4513;
+    --btn-hover: #A0522D;
+    /* เปลี่ยนสีพื้นหลังแถบให้ดูละมุนขึ้น (ครีมสว่าง) */
+    --btn-act: #FDF2E9; 
+    --btn-text: #FFFFFF;
+    --radius-pill: 999px; /* ความโค้งแบบแคปซูล */
+}
+
+.actions {
+    display: inline-flex;
+    margin: 1%;
+    margin-left: 3%;
+    align-items: center;
+    background-color: var(--btn-act);
+    /* ทำให้แถบโค้งมนเหมือนรูปตัวอย่าง */
+    border-radius: var(--radius-pill); 
+    padding: 6px; /* ระยะห่างระหว่างขอบแถบกับปุ่ม */
+    gap: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* ใส่เงาบางๆ ให้ดูมีมิติ */
+}
+
+.btn1 {
+    border: none; /* เอาเส้นขอบออกเพื่อให้ดูเป็นก้อนเดียวกับแถบ */
+    background: transparent; /* ปกติให้เป็นพื้นหลังโปร่งแสง */
+    color: #4A2B15; /* สีน้ำตาลเข้มสำหรับตัวหนังสือ */
+    padding: 10px 20px;
+    border-radius: var(--radius-pill); /* ปุ่มต้องโค้งเท่ากับแถบแม่ */
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.3s all ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* คลาสสำหรับปุ่มที่กำลังใช้งาน (Active) */
+
+
+.disable{
+    background-color: var(--btn-primary) !important;
+    color: white !important;
+    /* ใส่เงาที่ตัวปุ่มที่เลือกเพื่อให้ดูนูนออกมา */
+    box-shadow: 0 4px 10px rgba(139, 69, 19, 0.3); 
+}
+.btn1:hover:not(.act) {
+    background-color: rgba(139, 69, 19, 0.1);
+}

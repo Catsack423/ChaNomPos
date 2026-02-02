@@ -23,6 +23,14 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('page.dashboard');
     })->name('dashboard');
+
+    Route::get('/order',function(){
+        return view('page/orderhistory');
+    })->name('orderhistory');
+
+    Route::get('/stockedit',function(){
+        return view('page.stockedit');
+    })->name('stockedit');
 });

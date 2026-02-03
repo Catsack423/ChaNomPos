@@ -4,7 +4,7 @@
     <x-tagbar />
     
        
-        <div class="grid productcols" style="max-width: 80%; ">
+        <div class="grid productcols" >
              <div class="card">
                 <div class="row">
                     <h2 style="margin:0;">สต็อกวัตถุดิบ</h2>

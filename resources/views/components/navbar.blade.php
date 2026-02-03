@@ -27,9 +27,19 @@
             </form>
 
             @if (auth()->check() && auth()->user()->admin)
-              <button class="tab" data-target="admin">Admin</button>
+                @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
+                    <a href="{{route('admindashboard')}}"><button class="tab active" data-target="admin">Admin</button></a>
+                @else
+                    <a href="{{route('admindashboard')}}"><button class="tab" data-target="admin">Admin</button></a>
+                @endif
             @endif
-            <button class="tab active" data-target="user">Staff</button>
+
+            @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
+                    <a href="{{route('dashboard')}}"><button class="tab" data-target="user">Staff</button></a>
+            @else
+                    <a href="{{route('dashboard')}}"><button class="tab active" data-target="user">Staff</button></a>
+            @endif
+            
 
         </div>
     </div>

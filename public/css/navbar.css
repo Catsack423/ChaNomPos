@@ -61,6 +61,12 @@
     color: #3f3f46;
 }
 
+.tab.active{
+      background:rgba(123,74,46,.08);
+      border-color:rgba(123,74,46,.35);
+      color:var(--primary);
+}
+
 .tab:hover {
     background: rgba(123, 74, 46, .08);
     border-color: rgba(123, 74, 46, .35);

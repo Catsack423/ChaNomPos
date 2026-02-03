@@ -33,4 +33,17 @@ Route::middleware([
     Route::get('/storeedit',function(){
         return view('page.storeedit');
     })->name('storeedit');
+
+
+    Route::get('/admin/dashboard',function(){
+        return view('page.admindashboard');
+    })->name('admindashboard');
+
+    Route::get("/admin/menu",function(){
+        return view('page.adminmenu');
+    })->name('adminmenu');
+
+    Route::get('/admin/stock',function(){
+        return view('page.adminstock');
+    })->name('adminstock');
 });

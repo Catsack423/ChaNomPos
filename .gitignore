@@ -16,3 +16,19 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+# Laravel
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Vite
+/public/build
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

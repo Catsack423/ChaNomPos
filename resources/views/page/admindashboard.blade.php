@@ -99,6 +99,7 @@
             background: var(--danger-red);
             color: #fff;
         }
+
         /* กรุณาย้ายไป file ccsถ้าจะใช้ */
     </style>
     <x-tagbaradmin />
@@ -122,12 +123,13 @@
                 <table class="order-table">
                     <thead>
                         <tr>
-                          
+
                             <th>ID</th>
                             <th>สินค้าที่สั่ง</th>
                             <th>จำนวนทั้งหมด</th>
                             <th>ยอดรวม</th>
                             <th>ผู้รับออเดอร์</th>
+                            <th>วันที่</th>
                             <th>จัดการ</th>
                         </tr>
                     </thead>
@@ -135,56 +137,42 @@
                         <tr>
                             <td>#001</td>
                             <td>
-                                <span class="item-tag">ชานมไข่มุกx1</span>
+                                <span class="item-tag">ชานมx1</span>
                                 <span class="item-tag">ชาเขียวนมx1</span>
+                                <span class="item-tag">ไข่มุกx1</span>
                             </td>
-                            <td>2 แก้ว</td>
+                            <td>3 ชิ้น</td>
                             <td class="price-text">95 ฿</td>
                             <td>
                                 <div class="staff-info">
-                                    <span class="staff-icon">👤</span>
                                     <span>Somchai</span>
                                 </div>
                             </td>
+                            <td>1 ม.ค. 2569</td>
                             <td>
                                 <button class="btn-delete" onclick="return confirm('ลบออเดอร์นี้?')">ลบ</button>
                             </td>
                         </tr>
+
                         <tr>
-                            <td>#001</td>
+                            <td>#002</td>
                             <td>
-                                <span class="item-tag">ชานมไข่มุกx1</span>
-                                <span class="item-tag">ชาเขียวนมx1</span>
+                                <span class="item-tag">ชานมx1</span>
+                                <span class="item-tag">ไข่มุกx1</span>
                             </td>
-                            <td>2 แก้ว</td>
+                            <td>2 ชิ้น</td>
                             <td class="price-text">95 ฿</td>
                             <td>
                                 <div class="staff-info">
-                                    <span class="staff-icon">👤</span>
-                                    <span>Somchai</span>
+                                    <span>kim</span>
                                 </div>
                             </td>
-                            <td>
-                                <button class="btn-delete" onclick="return confirm('ลบออเดอร์นี้?')">ลบ</button>
-                            </td>
-                        </tr><tr>
-                            <td>#001</td>
-                            <td>
-                                <span class="item-tag">ชานมไข่มุกx1</span>
-                                <span class="item-tag">ชาเขียวนมx1</span>
-                            </td>
-                            <td>2 แก้ว</td>
-                            <td class="price-text">95 ฿</td>
-                            <td>
-                                <div class="staff-info">
-                                    <span class="staff-icon">👤</span>
-                                    <span>Somchai</span>
-                                </div>
-                            </td>
+                            <td>10 ม.ค. 2569</td>
                             <td>
                                 <button class="btn-delete" onclick="return confirm('ลบออเดอร์นี้?')">ลบ</button>
                             </td>
                         </tr>
+                        
                     </tbody>
                 </table>
             </div>

@@ -8,68 +8,96 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Ingredient;
 use App\Models\Inventory;
+use App\Models\InventoryLog; // เพิ่ม Model นี้เข้ามา
 use App\Models\Recipe;
 use App\Models\Sale;
 use App\Models\SaleItem;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. สร้าง Categories (5 หมวดหมู่)
+        // 1. สร้าง Users (ต้องมีคนทำรายการ Log)
+        $admin = User::factory()->create([
+            'name' => 'Admin Boss',
+            'email' => 'admin@test.com',
+            'admin' => true
+        ]);
+
+        $staff = User::factory()->count(3)->create();
+
+        // 2. สร้าง Categories
         $categories = Category::factory()->count(5)->create();
 
-        // 2. สร้าง Ingredients (วัตถุดิบ 10 อย่าง) และใส่ Stock เบื้องต้น
-        $ingredients = Ingredient::factory()->count(10)->create()->each(function ($ing) {
+        // 3. สร้าง Ingredients และบันทึก Log การนำเข้า (Action: add)
+        $ingredients = Ingredient::factory()->count(10)->create()->each(function ($ing) use ($admin) {
+            $initialQty = rand(5000, 10000);
+            
             Inventory::create([
                 'ingredient_id' => $ing->id,
-                'quantity' => rand(2000, 5000),
+                'quantity' => $initialQty,
                 'min_level' => 500,
-                'updated_at' => now(),
+            ]);
+
+            // บันทึก Log เมื่อมีการเพิ่มสต็อกเริ่มต้น
+            InventoryLog::create([
+                'ingredient_id' => $ing->id,
+                'user_id' => $admin->id,
+                'action' => 'add',
+                'quantity' => $initialQty,
+                'reason' => 'นำเข้าสต็อกเริ่มต้น (System Seed)',
             ]);
         });
 
-        // 3. ปั้ม Products 50 รายการ พร้อม "สูตร" และ "หมวดหมู่"
+        // 4. สร้าง Products พร้อม Recipes
         $products = Product::factory()->count(50)->create()->each(function ($product) use ($categories, $ingredients) {
-            // สุ่มผูกกับ Category 1-2 อัน
-            $product->categories()->attach(
-                $categories->random(rand(1, 2))->pluck('id')->toArray()
-            );
+            $product->categories()->attach($categories->random(rand(1, 2))->pluck('id'));
 
-            // --- เพิ่มการสร้าง Recipe (สูตร) ตรงนี้ ---
-            // สุ่มวัตถุดิบ 2-4 อย่างมาทำเป็นสูตรสำหรับสินค้าชิ้นนี้
-            $randomIngredients = $ingredients->random(rand(2, 4));
-            
-            foreach ($randomIngredients as $ing) {
+            // สุ่มสร้างสูตร 2-4 อย่างต่อ 1 เมนู
+            foreach ($ingredients->random(rand(2, 4)) as $ing) {
                 Recipe::create([
-                    'product_id'    => $product->id,
+                    'product_id' => $product->id,
                     'ingredient_id' => $ing->id,
-                    'amount'        => rand(10, 150), // สุ่มปริมาณที่ต้องใช้ เช่น 10g หรือ 150ml
+                    'amount' => rand(10, 100),
                 ]);
             }
         });
 
-        // 4. ปั้มประวัติการขาย 100 บิล (Sales)
+        // 5. สร้าง Sales และบันทึก Log การตัดสต็อกตามสูตร (Action: reduce)
         Sale::factory()->count(100)->create()->each(function ($sale) use ($products) {
-            // ในแต่ละบิล สุ่มสินค้า 1-5 อย่าง
-            $selectedProducts = $products->random(rand(1, 5));
+            $selectedProducts = $products->random(rand(1, 4));
             
             foreach ($selectedProducts as $product) {
+                $qtyOrdered = rand(1, 3);
+                
                 SaleItem::create([
-                    'sale_id'    => $sale->id,
+                    'sale_id' => $sale->id,
                     'product_id' => $product->id,
-                    'quantity'   => rand(1, 3),
-                    'price'      => $product->price,
+                    'quantity' => $qtyOrdered,
+                    'price' => $product->price,
                 ]);
+
+                // --- ส่วนที่เพิ่มมา: ตัดสต็อกตาม Recipe และบันทึก Log ---
+                foreach ($product->recipes as $recipe) {
+                    $totalUsed = $recipe->amount * $qtyOrdered;
+
+                    InventoryLog::create([
+                        'ingredient_id' => $recipe->ingredient_id,
+                        'user_id' => $sale->user_id,
+                        'action' => 'reduce',
+                        'quantity' => $totalUsed,
+                        'reason' => "ตัดสต็อกจากการขาย Order #{$sale->id}",
+                    ]);
+
+                    // ลดจำนวนในตาราง Inventory จริงๆ
+                    Inventory::where('ingredient_id', $recipe->ingredient_id)
+                             ->decrement('quantity', $totalUsed);
+                }
             }
 
-            // อัปเดตราคารวม (ใช้การคำนวณผ่าน PHP เพื่อเลี่ยงปัญหา DB::raw)
-            $total = $sale->items->sum(function($item) {
-                return $item->quantity * $item->price;
-            });
-            
-            $sale->update(['total_price' => $total]);
+            // อัปเดตราคารวมบิล
+            $sale->update(['total_price' => $sale->items->sum(fn($i) => $i->quantity * $i->price)]);
         });
     }
 }

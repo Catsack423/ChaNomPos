@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('descripsion');
             $table->string('imgurl');
+            $table ->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

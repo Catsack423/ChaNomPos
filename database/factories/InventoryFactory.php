@@ -17,7 +17,8 @@ class InventoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'ingredient_id' => \App\Models\Ingredient::factory(),
+            'ingredient_id' => \App\Models\Ingredient::inRandomOrder()->first()?->id
+                ?? \App\Models\Ingredient::factory(),
             'quantity' => $this->faker->numberBetween(500, 5000),
             'min_level' => 300,
         ];

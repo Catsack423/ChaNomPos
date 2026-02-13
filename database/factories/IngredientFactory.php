@@ -17,7 +17,8 @@ class IngredientFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->randomElement(['Tea base', 'Fresh Milk', 'Brown Sugar', 'Pearls', 'Cocoa']),
+            'unit' => $this->faker->randomElement(['ml', 'g', 'scoop']),
         ];
     }
 }

@@ -17,7 +17,9 @@ class SaleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => \App\Models\User::factory(),
+            'total_price' => 0, // มักจะคำนวณจาก SaleItems ภายหลัง
+            'sold_at' => now(),
         ];
     }
 }

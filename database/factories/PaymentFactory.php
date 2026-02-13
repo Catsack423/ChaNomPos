@@ -17,7 +17,10 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'sale_id' => \App\Models\Sale::factory(),
+            'medthod' => $this->faker->randomElement(['cash', 'promptpay', 'credit_card']),
+            'amount' => $this->faker->randomFloat(2, 35, 500),
+            'paid_at' => now(),
         ];
     }
 }

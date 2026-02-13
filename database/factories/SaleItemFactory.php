@@ -17,7 +17,10 @@ class SaleItemFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'sale_id' => \App\Models\Sale::factory(),
+            'product_id' => \App\Models\Product::factory(),
+            'quantity' => $this->faker->numberBetween(1, 5),
+            'price' => $this->faker->randomFloat(2, 35, 95),
         ];
     }
 }

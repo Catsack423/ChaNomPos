@@ -17,7 +17,9 @@ class RecipeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'product_id' => \App\Models\Product::factory(),
+            'ingredient_id' => \App\Models\Ingredient::factory(),
+            'amount' => $this->faker->randomFloat(2, 5, 200),
         ];
     }
 }

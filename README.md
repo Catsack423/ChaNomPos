@@ -24,6 +24,7 @@ php artisan jetstream:install livewire
 
 ```bash
 php artisan migrate
+php artisan migrate:fresh --seed
 npm install
 npm run build
 

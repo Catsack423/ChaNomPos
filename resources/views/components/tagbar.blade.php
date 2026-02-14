@@ -1,4 +1,4 @@
-<body>
+
     <link rel="stylesheet" href="{{ asset('css/tagbar.css') }}">
     <div class="actions">
         @if (Route::is('dashboard'))
@@ -21,4 +21,4 @@
         @endif
 
     </div>
-</body>
+

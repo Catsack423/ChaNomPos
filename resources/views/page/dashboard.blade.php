@@ -1,7 +1,8 @@
 <x-app-layout>
 <link rel="stylesheet" href="{{ asset('css/bubble.css') }}">
-
+<x-tagbar />
 <main>
+    
 <div class="grid cols-2">
 
 {{-- ================= MENU ================= --}}

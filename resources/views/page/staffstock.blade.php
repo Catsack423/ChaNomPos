@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <link rel="stylesheet" href="{{ asset('css/storeedit.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
     <style>
         /* คุมโทนสีและค่าความมน (Global-like variables) */
         :root {

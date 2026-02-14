@@ -1,5 +1,5 @@
 <x-app-layout>
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <x-tagbar />
     <div>
         <div class="grid productcols" >

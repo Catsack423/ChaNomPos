@@ -11,8 +11,12 @@ class SaleItem extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'sale_id','product_id','quantity','price'
+        'sale_id',
+        'product_id',
+        'quantity',
+        'price'
     ];
+
 
     public function sale()
     {

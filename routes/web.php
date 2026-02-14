@@ -1,20 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\SaleController;
 
 Route::get('/', function () {
-    return redirect()->route("dashboard");
+    return redirect()->route('dashboard');
 });
 
 Route::middleware([
@@ -22,28 +12,30 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('page.dashboard');
-    })->name('dashboard');
 
-    Route::get('/order',function(){
-        return view('page/orderhistory');
-    })->name('orderhistory');
+    // ================= USER =================
+    Route::get('/dashboard', [SaleController::class, 'index'])
+        ->name('dashboard');
 
-    Route::get('/staffstock',function(){
-        return view('page.staffstock');
-    })->name('storeedit');
+    Route::post('/add-to-cart', [SaleController::class, 'addToCart'])
+        ->name('cart.add');
 
+    Route::post('/cart/increase', [SaleController::class, 'increase'])
+        ->name('cart.increase');
 
-    Route::get('/admin/dashboard',function(){
-        return view('page.admindashboard');
-    })->name('admindashboard');
+    Route::post('/cart/decrease', [SaleController::class, 'decrease'])
+        ->name('cart.decrease');
 
-    Route::get("/admin/menu",function(){
-        return view('page.adminmenu');
-    })->name('adminmenu');
+    Route::post('/cart/remove', [SaleController::class, 'remove'])
+        ->name('cart.remove');
 
-    Route::get('/admin/stock',function(){
-        return view('page.adminstock');
-    })->name('adminstock');
+    Route::post('/checkout', [SaleController::class, 'checkout'])
+        ->name('checkout');
+
+    // ================= OTHER =================
+    Route::get('/order', fn() => view('page.orderhistory'))->name('orderhistory');
+    Route::get('/staffstock', fn() => view('page.staffstock'))->name('storeedit');
+    Route::get('/admin/dashboard', fn() => view('page.admindashboard'))->name('admindashboard');
+    Route::get('/admin/menu', fn() => view('page.adminmenu'))->name('adminmenu');
+    Route::get('/admin/stock', fn() => view('page.adminstock'))->name('adminstock');
 });

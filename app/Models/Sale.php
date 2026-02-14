@@ -11,8 +11,11 @@ class Sale extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id','total_price','sold_at'
+        'user_id',
+        'total_price',
+        'sold_at'
     ];
+
 
     public function user()
     {
@@ -27,5 +30,9 @@ class Sale extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+    public function saleItems()
+    {
+        return $this->hasMany(SaleItem::class);
     }
 }

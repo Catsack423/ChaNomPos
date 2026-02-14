@@ -30,7 +30,7 @@ Route::middleware([
         return view('page/orderhistory');
     })->name('orderhistory');
 
-    Route::get('/storeedit',function(){
+    Route::get('/staffstock',function(){
         return view('page.staffstock');
     })->name('storeedit');
 

@@ -116,7 +116,7 @@
             </div> --}}
             <div class="search">
                 <b>ค้นหา:</b>
-                <input type="text">
+                <input type="text" class="searchinput">
                 <input type="date">
             </div>
             <div class="table-container">

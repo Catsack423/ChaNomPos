@@ -1,0 +1,107 @@
+/* ===== กรอบใหญ่ ===== */
+.menu-wrapper {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* ===== Header ===== */
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-add-menu {
+    border: 1.5px solid #d1b59a;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: #fff;
+    color: #7a4a2e;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* ===== Grid เล็ก ===== */
+.menu-grid-small {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 180px);
+    gap: 24px;
+}
+
+/* ===== Card เมนู ===== */
+.menu-card-small {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    position: relative;
+}
+
+/* ===== ปุ่มลบ ===== */
+.btn-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: #f3f3f3;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
+/* ===== รูป ===== */
+.menu-img-box {
+    width: 100%;
+    height: 100px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.menu-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* ===== ข้อความ ===== */
+.menu-text {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* ===== Footer ===== */
+.menu-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* toggle */
+.toggle-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+}
+
+.toggle-dot.on { background: #22c55e; }
+.toggle-dot.off { background: #9ca3af; }
+
+/* edit */
+.btn-edit {
+    background: #7a4a2e;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+}

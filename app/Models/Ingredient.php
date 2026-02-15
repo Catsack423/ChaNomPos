@@ -22,4 +22,11 @@ class Ingredient extends Model
     public function logs(){
         return $this->hasOne(InventoryLog::class);
     }
+    public function products()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'recipes'
+        )->withPivot('amount');
+    }
 }

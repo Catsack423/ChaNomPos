@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,9 +42,23 @@ Route::middleware([
         return view('page.admindashboard');
     })->name('admindashboard');
 
-    Route::get("/admin/menu",function(){
-        return view('page.adminmenu');
-    })->name('adminmenu');
+
+    Route::get('/admin/menu', [MenuController::class, 'adminMenu'])->name('adminmenu');
+
+    Route::post('/admin/menu/{id}/activate', [MenuController::class, 'activate'])
+    ->name('adminmenu.activate');
+
+    Route::get('/admin/menu/create',
+        [MenuController::class, 'create'])->name('adminmenu.create');
+
+    Route::post('/admin/menu',
+        [MenuController::class, 'store'])->name('adminmenu.store');
+
+    Route::delete('/admin/menu/{id}',
+    [MenuController::class, 'destroy'])->name('adminmenu.destroy');
+
+    Route::put('/admin/menu/{id}',
+    [MenuController::class, 'update'])->name('adminmenu.update');
 
     Route::get('/admin/stock',function(){
         return view('page.adminstock');

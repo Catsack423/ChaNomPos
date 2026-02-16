@@ -43,6 +43,19 @@ body {
   }
 }
 
+/* สำหรับ iPad แนวตั้ง และแท็บเล็ตขนาดใกล้เคียง */
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+    .cols-2 {
+        max-width: 90%;
+    }
+}
+
+/* สำหรับ iPad แนวนอน */
+@media only screen and (min-width: 1024px) {
+    .cols-2 {
+        max-width: 90%;
+    }
+}
 .card {
   background: var(--card);
   border: 1px solid var(--border);

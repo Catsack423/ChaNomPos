@@ -51,11 +51,7 @@ body {
 }
 
 /* สำหรับ iPad แนวนอน */
-@media only screen and (min-width: 1024px) {
-    .cols-2 {
-        max-width: 90%;
-    }
-}
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -109,10 +105,16 @@ select {
 
 @media(max-width:980px) {
   .products {
-    grid-template-columns: 1fr
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
+
+@media(max-width:740px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .product {
   border: 1px solid var(--border);
   border-radius: var(--radius);

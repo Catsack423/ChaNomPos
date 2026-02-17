@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\OrderHistoryController;
+use App\Http\Controllers\AdminOrderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,18 +27,10 @@ Route::middleware([
         return view('page.dashboard');
     })->name('dashboard');
 
-    Route::get('/order',function(){
-        return view('page/orderhistory');
-    })->name('orderhistory');
-
     Route::get('/staffstock',function(){
         return view('page.staffstock');
     })->name('storeedit');
 
-
-    Route::get('/admin/dashboard',function(){
-        return view('page.admindashboard');
-    })->name('admindashboard');
 
     Route::get("/admin/menu",function(){
         return view('page.adminmenu');
@@ -46,4 +39,25 @@ Route::middleware([
     Route::get('/admin/stock',function(){
         return view('page.adminstock');
     })->name('adminstock');
+
+    Route::get('/order', [OrderHistoryController::class, 'index'])
+    ->name('orderhistory');
+    
+    Route::get('/admin/dashboard', [AdminOrderController::class, 'index'])
+    ->name('admindashboard');
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/sales/{id}/edit', 
+            [AdminOrderController::class, 'edit']
+        )->name('admin.sales.edit');
+
+        Route::put('/sales/{id}', 
+            [AdminOrderController::class, 'update']
+        )->name('admin.sales.update');
+
+        Route::delete('/sales/{id}', 
+            [AdminOrderController::class, 'destroy']
+        )->name('admin.sales.destroy');
+    });
+
 });

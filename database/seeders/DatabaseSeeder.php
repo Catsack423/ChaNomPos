@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         // ปั้ม 10 อย่าง และบันทึก Log การนำเข้าครั้งแรก
         $ingredients = Ingredient::factory()->count(10)->create()->each(function ($ing) use ($admin) {
             $initialQty = rand(5000, 10000);
-            
+
             Inventory::create([
                 'ingredient_id' => $ing->id,
                 'quantity' => $initialQty,
@@ -76,10 +76,10 @@ class DatabaseSeeder extends Seeder
         Sale::factory()->count(100)->create()->each(function ($sale) use ($products) {
             // ในแต่ละบิล สุ่มสินค้า 1-4 อย่าง
             $selectedItems = $products->random(rand(1, 4));
-            
+
             foreach ($selectedItems as $product) {
                 $qtyOrdered = rand(1, 3);
-                
+
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $product->id,

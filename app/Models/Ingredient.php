@@ -15,18 +15,13 @@ class Ingredient extends Model
         return $this->hasOne(Inventory::class);
     }
 
-    public function recipes(){
+    public function recipe()
+    {
         return $this->hasOne(Recipe::class);
     }
 
     public function logs(){
         return $this->hasOne(InventoryLog::class);
     }
-    public function products()
-    {
-        return $this->belongsToMany(
-            Product::class,
-            'recipes'
-        )->withPivot('amount');
-    }
+
 }

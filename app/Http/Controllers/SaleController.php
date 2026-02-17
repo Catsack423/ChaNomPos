@@ -20,6 +20,14 @@ class SaleController extends Controller
         return view('page.dashboard', compact('products', 'cart', 'categories'));
     }
 
+    private function responseCart($cart)
+    {
+        return response()->json([
+            'cart' => $cart,
+            'total' => collect($cart)->sum(fn($i)=>$i['price']*$i['quantity'])
+        ]);
+    }
+
     public function addToCart(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
@@ -36,7 +44,7 @@ class SaleController extends Controller
         }
 
         session()->put('cart', $cart);
-        return back();
+        return $this->responseCart($cart);
     }
 
     public function increase(Request $request)
@@ -46,10 +54,10 @@ class SaleController extends Controller
 
         if (isset($cart[$id])) {
             $cart[$id]['quantity']++;
-            session()->put('cart', $cart);
         }
 
-        return back();
+        session()->put('cart', $cart);
+        return $this->responseCart($cart);
     }
 
     public function decrease(Request $request)
@@ -59,15 +67,13 @@ class SaleController extends Controller
 
         if (isset($cart[$id])) {
             $cart[$id]['quantity']--;
-
             if ($cart[$id]['quantity'] <= 0) {
                 unset($cart[$id]);
             }
-
-            session()->put('cart', $cart);
         }
 
-        return back();
+        session()->put('cart', $cart);
+        return $this->responseCart($cart);
     }
 
     public function remove(Request $request)
@@ -77,10 +83,10 @@ class SaleController extends Controller
 
         if (isset($cart[$id])) {
             unset($cart[$id]);
-            session()->put('cart', $cart);
         }
 
-        return back();
+        session()->put('cart', $cart);
+        return $this->responseCart($cart);
     }
 
     public function checkout()

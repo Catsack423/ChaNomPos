@@ -49,6 +49,7 @@ class MenuController extends Controller
             'amounts' => 'nullable|array',
         ]);
 
+        // ตั้งค่ารูปภาพเริ่มต้น
         $data['imgurl'] = 'img/default.png';
 
         if ($request->hasFile('image')) {
@@ -69,7 +70,7 @@ class MenuController extends Controller
         // 3. บันทึกสูตรสินค้า
         if ($request->has('ingredients') && $request->has('amounts')) {
             foreach ($request->ingredients as $index => $ingredient_id) {
-                if ($ingredient_id && !empty($request->amounts[$index])) {
+                if (!empty($ingredient_id) && !empty($request->amounts[$index])) {
                     $product->recipes()->create([
                         'ingredient_id' => $ingredient_id,
                         'amount' => $request->amounts[$index]
@@ -98,11 +99,20 @@ class MenuController extends Controller
 
         // จัดการรูปภาพ (ถ้ามีการอัปโหลดใหม่)
         if ($request->hasFile('image')) {
-            // ลบรูปเก่า (ถ้าไม่ใช่ default)
-            if ($product->imgurl && $product->imgurl !== 'img/default.png' && File::exists(public_path($product->imgurl))) {
-                File::delete(public_path($product->imgurl));
+            
+            // ป้องกันการลบรูปที่สินค้าอื่นใช้แชร์อยู่ (Fix รูปพัง)
+            if ($product->imgurl && $product->imgurl !== 'img/default.png') {
+                $isImageShared = Product::where('imgurl', $product->imgurl)
+                                        ->where('id', '!=', $product->id)
+                                        ->exists();
+
+                // ถ้าเช็คแล้ว "ไม่มี" สินค้าอื่นใช้รูปนี้อยู่ ถึงจะอนุญาตให้ลบไฟล์เก่าทิ้ง
+                if (!$isImageShared && File::exists(public_path($product->imgurl))) {
+                    File::delete(public_path($product->imgurl));
+                }
             }
 
+            // อัปโหลดรูปใหม่
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('img'), $filename);
@@ -136,8 +146,16 @@ class MenuController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if ($product->imgurl && $product->imgurl !== 'img/default.png' && File::exists(public_path($product->imgurl))) {
-            File::delete(public_path($product->imgurl));
+        // ป้องกันลบไฟล์รูปภาพที่มีสินค้าตัวอื่นใช้อยู่ (Fix รูปพัง)
+        if ($product->imgurl && $product->imgurl !== 'img/default.png') {
+            $isImageShared = Product::where('imgurl', $product->imgurl)
+                                    ->where('id', '!=', $product->id)
+                                    ->exists();
+
+            // ถ้าเช็คแล้วไม่มีใครใช้ ค่อยลบทิ้ง
+            if (!$isImageShared && File::exists(public_path($product->imgurl))) {
+                File::delete(public_path($product->imgurl));
+            }
         }
         
         $product->delete();

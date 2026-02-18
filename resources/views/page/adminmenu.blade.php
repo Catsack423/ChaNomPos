@@ -120,46 +120,6 @@ function addRecipeRow() {
     updateIngredientOptions();
 }
 
-
-function addCategoryRow() {
-
-    const container = document.getElementById('categoryContainer');
-    const firstRow = container.querySelector('.category-form');
-
-    // เปลี่ยนปุ่ม + เพิ่ม ของแถวเดิมเป็น ลบ
-    if (firstRow) {
-        const oldButton = firstRow.querySelector('.btn-add');
-
-        oldButton.innerText = '✕';
-        oldButton.classList.remove('btn-add');
-        oldButton.classList.add('x-delete-btn');
-
-        oldButton.onclick = function () {
-            this.parentElement.remove();
-        };
-    }
-
-    // สร้างแถวใหม่
-    const newRow = document.createElement('div');
-    newRow.classList.add('category-form');
-
-    newRow.innerHTML = `
-        <input type="text"
-               name="categories[]"
-               placeholder="ชื่อประเภทสินค้า"
-               class="form-input"
-               >
-
-        <button type="button"
-                class="btn-add"
-                onclick="addCategoryRow()">
-            + เพิ่ม
-        </button>
-    `;
-
-    // เพิ่มไว้บนสุด
-    container.insertBefore(newRow, container.firstChild);
-}
 </script>
 
 
@@ -271,23 +231,36 @@ function addCategoryRow() {
                               class="category-add-form">
                             @csrf
                             <input type="text" name="name"
-                                   placeholder="ชื่อประเภทสินค้า" required>
+                                   placeholder="ชื่อประเภทสินค้า" class="form-input" required>
                             <button type="submit" class="btn-add">+ เพิ่ม</button>
                         </form>
 
-                        @foreach ($product->categories as $category)
-                        <div class="cat-item">
-                            <span class="form-input">{{ $category->name }}</span>
+                        @foreach ($categories as $category)
+        <div class="cat-item" style="display:flex; align-items:center; gap:8px;">
 
-                            <form method="POST"
-                                  action="{{ route('adminmenu.category.detach',
-                                      [$product->id, $category->id]) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="x-delete-btn">✕</button>
-                            </form>
-                        </div>
-                        @endforeach
+            {{-- Checkbox --}}
+            <input type="checkbox"
+                   name="category_ids[]"
+                   value="{{ $category->id }}"
+                   {{ isset($product) && $product->categories->contains($category->id) ? 'checked' : '' }}
+                   onchange="toggleCategory(
+                            this,
+                            {{ isset($product) ? $product->id : 'null' }},
+                            {{ $category->id }})">
+            {{-- Name --}}
+            <span style="flex:1;">{{ $category->name }}</span>
+
+            {{-- ปุ่มลบ DB --}}
+            <form method="POST"
+                  action="{{ route('adminmenu.category.delete', $category->id) }}"
+                  onsubmit="return confirm('ลบประเภทนี้ออกจากระบบถาวร ?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="x-delete-btn">✕</button>
+            </form>
+
+        </div>
+        @endforeach
                     </div>
                 </div>
 
@@ -332,7 +305,7 @@ function addCategoryRow() {
                         <input type="number" name="amount"
                                placeholder="จำนวน" required class="form-input">
 
-                        <button type="submit">+ เพิ่ม</button>
+                        <button type="submit">+เพิ่ม</button>
                     </form>
 
                     {{-- รายการสูตร --}}
@@ -408,20 +381,42 @@ function addCategoryRow() {
                             <h6 class="section-title">ประเภทสินค้า</h6>
 
                             <div id="categoryContainer">
-                                <div class="category-form">
-                                    <input type="text"
-                                           name="categories[]"
-                                           placeholder="ชื่อประเภทสินค้า"
-                                           class="form-input"
-                                           >
+                                <div style="display:flex; gap:8px;">
+                                <input type="text"
+                                    id="newCategoryName"
+                                    placeholder="เพิ่มประเภทใหม่"
+                                    class="form-input">
 
-                                    <button type="button"
-                                            class="btn-add"
-                                            onclick="addCategoryRow()">
-                                        + เพิ่ม
-                                    </button>
-                                </div>
+                                <button type="button"
+                                        class="btn-add"
+                                        onclick="createCategoryAjax()">
+                                    + เพิ่ม
+                                </button>
                             </div>
+                                {{-- เลือกประเภทที่มีอยู่แล้ว --}}
+                                        <div id="categoryList">
+
+                                            @foreach ($categories as $category)
+                                            <div class="cat-item"
+                                                data-id="{{ $category->id }}"
+                                                style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+
+                                                <input type="checkbox"
+                                                    name="category_ids[]"
+                                                    value="{{ $category->id }}">
+
+                                                <span style="flex:1;">{{ $category->name }}</span>
+
+                                                <button type="button"
+                                                        onclick="deleteCategory({{ $category->id }})"
+                                                        class="x-delete-btn">
+                                                    ✕
+                                                </button>
+                                            </div>
+                                            @endforeach
+
+                                        </div>
+                                 </div>
                         </div>
 
                     </div>
@@ -484,6 +479,15 @@ function addCategoryRow() {
                 </div>
 
             </form>
+            @foreach ($categories as $category)
+<form id="delete-cat-{{ $category->id }}"
+      method="POST"
+      action="{{ route('adminmenu.category.delete', $category->id) }}"
+      style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
+@endforeach
             {{-- ปุ่มบันทึก --}}
             <button type="submit" form="createProductForm" class="save-btn">บันทึก</button>
         </div>
@@ -514,6 +518,102 @@ document.addEventListener('change', function (e) {
 });
 </script>
 
+<script>
+function toggleCategory(checkbox, productId, categoryId) {
+    fetch(`/adminmenu/product/${productId}/category/toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            category_id: categoryId,
+            checked: checkbox.checked
+        })
+    }).catch(() => {
+        // ถ้า error → revert checkbox
+        checkbox.checked = !checkbox.checked;
+        alert('เกิดข้อผิดพลาด');
+    });
+}
+</script>
+{{-- AJAX catagory --}}
+<script>
+
+function createCategoryAjax() {
+
+    let name = document.getElementById('newCategoryName').value;
+
+    if (!name) {
+        alert('กรุณากรอกชื่อประเภท');
+        return;
+    }
+
+    fetch("{{ route('adminmenu.category.ajaxStore') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ name: name })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.success) {
+
+            let category = data.category;
+
+            let html = `
+                <div class="cat-item"
+                     data-id="${category.id}"
+                     style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+
+                    <input type="checkbox"
+                           name="category_ids[]"
+                           value="${category.id}"
+                           checked>
+
+                    <span style="flex:1;">${category.name}</span>
+
+                    <button type="button"
+                            onclick="deleteCategory(${category.id})"
+                            class="x-delete-btn">
+                        ✕
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('categoryList')
+                    .insertAdjacentHTML('beforeend', html);
+
+            document.getElementById('newCategoryName').value = '';
+        }
+    });
+}
+
+
+
+function deleteCategory(id) {
+
+    if (!confirm('ลบประเภทนี้ออกจากระบบ ?')) return;
+
+    fetch(`/adminmenu/category/ajax-delete/${id}`, {
+        method: "DELETE",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.success) {
+            document.querySelector(`[data-id='${id}']`).remove();
+        }
+    });
+}
+
+</script>
 
 
         </x-card>

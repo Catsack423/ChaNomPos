@@ -27,7 +27,7 @@
 /* ===== Grid เล็ก ===== */
 .menu-grid-small {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 180px);
+    grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
 
@@ -35,9 +35,14 @@
 .menu-card-small {
     background: #fff;
     border-radius: 14px;
-    padding: 14px;
+    padding: 16px;
     box-shadow: 0 6px 15px rgba(0,0,0,0.06);
     position: relative;
+
+    height: 260px;          /* fix ความสูง */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* ===== ปุ่มลบ ===== */
@@ -56,20 +61,18 @@
 /* ===== รูป ===== */
 .menu-img-box {
     width: 100%;
-    height: 100px;
-    border-radius: 10px;
+    height: 160px;
+    border-radius: 12px;
+    overflow: hidden;
     background: #f3f4f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
 }
 
 .menu-img-box img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 10px;
+    object-position: center top;
 }
 
 /* ===== ข้อความ ===== */

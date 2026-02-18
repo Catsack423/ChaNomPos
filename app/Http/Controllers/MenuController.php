@@ -14,10 +14,10 @@ class MenuController extends Controller
 {
     public function adminMenu()
 {
-    $products = Product::with('recipes.ingredient')->get();
+    $products = Product::with(['recipes.ingredient','categories'])->get(); // 👈 เพิ่มตรงนี้
     $ingredients = Ingredient::with('recipe')->get();
-
-    return view('page.adminmenu', compact('products', 'ingredients'));
+    $categories = Category::all();
+    return view('page.adminmenu', compact('products', 'ingredients', 'categories'));
 }
 
     public function activate($id)
@@ -61,28 +61,19 @@ class MenuController extends Controller
 
     $product = Product::create($data);
 
-    if ($request->categories) {
+if ($request->category_ids) {
+        $product->categories()->attach($request->category_ids);
+    }
 
-    $categoryIds = [];
-
-    foreach ($request->categories as $catName) {
-
-        // ข้ามค่าที่ว่าง
-        if (!$catName || trim($catName) === '') {
-            continue;
+    // 🔹 สร้างประเภทใหม่
+    if ($request->new_categories) {
+        foreach ($request->new_categories as $catName) {
+            if ($catName) {
+                $category = Category::firstOrCreate(['name' => $catName]);
+                $product->categories()->attach($category->id);
+            }
         }
-
-        $category = \App\Models\Category::firstOrCreate([
-            'name' => trim($catName)
-        ]);
-
-        $categoryIds[] = $category->id;
     }
-
-    if (!empty($categoryIds)) {
-        $product->categories()->attach($categoryIds);
-    }
-}
 
     if ($request->ingredients) {
         foreach ($request->ingredients as $i => $ing) {
@@ -97,7 +88,35 @@ class MenuController extends Controller
 
     return redirect()->route('adminmenu');
 }
+//ajax
+public function ajaxStoreCategory(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255'
+    ]);
 
+    $category = Category::create([
+        'name' => $request->name
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'category' => $category
+    ]);
+}
+
+
+public function ajaxDeleteCategory($id)
+{
+    $category = Category::findOrFail($id);
+    $category->delete();
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
+//
 
     public function destroy($id)
     {
@@ -159,12 +178,11 @@ $request->validate([
     }
 
 
-    public function detachCategory(Product $product, Category $category)
-    {
-    $product->categories()->detach($category->id);
-
+    public function deleteCategory(Category $category)
+{
+    $category->delete(); // cascade จะลบ pivot ให้เอง
     return back();
-    }
+}
 
     public function addCategory(Request $request, Product $product){
     $request->validate([
@@ -178,6 +196,28 @@ $request->validate([
     $product->categories()->syncWithoutDetaching($category->id);
     return back();
     }
+
+    public function syncCategory(Request $request, Product $product)
+{
+    $product->categories()->sync($request->categories ?? []);
+    return back()->with('success', 'อัปเดตประเภทสินค้าแล้ว');
+}
+public function toggleCategory(Request $request, Product $product)
+{
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'checked' => 'required|boolean',
+    ]);
+
+    if ($request->checked) {
+        $product->categories()->syncWithoutDetaching($request->category_id);
+    } else {
+        $product->categories()->detach($request->category_id);
+    }
+
+    return response()->json(['success' => true]);
+}
+
 
     public function updatemodal(Request $request, Product $product)
 {

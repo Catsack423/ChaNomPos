@@ -66,6 +66,23 @@ Route::middleware([
     [MenuController::class, 'storeCategory'])
     ->name('adminmenu.category.store');
 
+//AJAX
+        // AJAX create
+Route::post('/adminmenu/category/ajax-store',
+    [MenuController::class, 'ajaxStoreCategory']
+)->name('adminmenu.category.ajaxStore');
+
+// AJAX delete
+Route::delete('/adminmenu/category/ajax-delete/{id}',
+    [MenuController::class, 'ajaxDeleteCategory']
+)->name('adminmenu.category.ajaxDelete');
+//
+    Route::post(
+    '/adminmenu/product/{product}/category/toggle',
+    [MenuController::class, 'toggleCategory']
+)->name('adminmenu.category.toggle');
+
+
 Route::delete('/admin/create/{id}',
     [MenuController::class, 'deleteCategory'])
     ->name('adminmenu.create.delete');
@@ -81,8 +98,10 @@ Route::delete('/admin/create/{id}',
 
     Route::delete('/admin/recipes/{recipe}', [MenuController::class, 'destroymodal'])->name('adminmenu.destroymodal');
 
-    Route::delete('/admin/menu/{product}/category/{category}',[MenuController::class, 'detachCategory'])->name('adminmenu.category.detach');
+    Route::delete(
+    '/adminmenu/category/{category}',[MenuController::class, 'deleteCategory'])->name('adminmenu.category.delete');
     Route::post('/admin/menu/{product}/category',[MenuController::class, 'addCategory'])->name('adminmenu.category.add');
+    Route::post('/adminmenu/{product}/category/sync',[MenuController::class, 'syncCategory'])->name('adminmenu.category.sync');
     Route::put('/admin/menu/{product}',[MenuController::class, 'updatemodal'])->name('adminmenu.updatemodal');
     Route::patch('/admin/menu/{product}',[MenuController::class, 'updateimgmodal'])->name('adminmenu.updateimgmodal');
 

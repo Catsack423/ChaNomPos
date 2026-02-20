@@ -110,13 +110,13 @@
                                     <div class="category-box">
                                         <h6 class="section-title">ประเภทสินค้า</h6>
                                         <div id="categoryContainer">
-                                            <div style="display:flex; gap:8px;">
+                                            <div style="display:flex; gap:10px; align-items: center;">
                                                 <input type="text" id="newCategoryName" placeholder="เพิ่มประเภทใหม่" class="form-input">
                                                 <button type="button" class="btn-add" onclick="createCategoryAjax()">+ เพิ่ม</button>
                                             </div>
                                             <div id="categoryList">
                                                 @foreach ($categories as $category)
-                                                <div class="cat-item" data-id="{{ $category->id }}" style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                                                <div class="cat-item" data-id="{{ $category->id }}" style="display:flex; align-items:center; gap:8px; margin-bottom:8px; margin-top:8px;">
                                                     <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" class="category-checkbox">
                                                     <span style="flex:1;">{{ $category->name }}</span>
                                                     <button type="button" onclick="deleteCategory({{ $category->id }})" class="x-delete-btn">✕</button>
@@ -176,7 +176,7 @@
                     const form = document.getElementById('mainMenuForm');
                     const methodInput = document.getElementById('formMethod');
                     const titleText = document.getElementById('modalTitleText');
-                    
+
                     form.reset();
                     document.getElementById('previewImage').src = baseAppUrl + "/img/logo.png";
                     document.getElementById('recipeContainer').innerHTML = '';
@@ -190,19 +190,19 @@
 
                     } else if (mode === 'edit') {
                         titleText.innerText = "แก้ไขข้อมูลสินค้า";
-                        
+
                         const product = JSON.parse(btnElement.getAttribute('data-product'));
                         const categories = JSON.parse(btnElement.getAttribute('data-categories'));
                         const recipes = JSON.parse(btnElement.getAttribute('data-recipes'));
 
                         // ชี้ Route ไปที่การ Update (Method PUT)
-                        form.action = `${updateBaseUrl}/${product.id}`; 
+                        form.action = `${updateBaseUrl}/${product.id}`;
                         methodInput.value = "PUT";
 
                         document.getElementById('productName').value = product.name;
                         document.getElementById('productPrice').value = product.price;
                         document.getElementById('productDesc').value = product.description || '';
-                        
+
                         if(product.imgurl) {
                             document.getElementById('previewImage').src = `${baseAppUrl}/${product.imgurl}`;
                         }
@@ -228,7 +228,7 @@
                 function addRecipeRow(ingredientId = '', amount = '') {
                     const container = document.getElementById('recipeContainer');
                     const template = document.getElementById('recipeTemplate').querySelector('.recipe-row').cloneNode(true);
-                    
+
                     if (ingredientId !== '') template.querySelector('.ingredient-select').value = ingredientId;
                     if (amount !== '') template.querySelector('.amount-input').value = amount;
 

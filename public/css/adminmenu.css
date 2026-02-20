@@ -1,12 +1,18 @@
 /* ===== กรอบใหญ่ ===== */
 .menu-wrapper {
-    background: #fff;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    background: #f8f8f8;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
 }
 
 /* ===== Header ===== */
+.menu-header h4 {
+    font-weight: 600;
+    font-size: 20px;
+    color: #333;
+}
+
 .menu-header {
     display: flex;
     justify-content: space-between;
@@ -16,35 +22,47 @@
 
 .btn-add-menu {
     border: 1.5px solid #d1b59a;
-    padding: 6px 14px;
-    border-radius: 20px;
+    padding: 8px 18px;
+    border-radius: 25px;
     background: #fff;
     color: #7a4a2e;
-    text-decoration: none;
     font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.25s ease;
 }
-
+.btn-add-menu:hover {
+    background: #7a4a2e;
+    color: #fff;
+}
 /* ===== Grid เล็ก ===== */
 .menu-grid-small {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
 }
 
 /* ===== Card เมนู ===== */
 .menu-card-small {
-    background: #fff;
-    border-radius: 14px;
-    padding: 16px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.07);
     position: relative;
 
-    height: 260px;          /* fix ความสูง */
+    height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-}
 
+    transition: 0.3s ease;
+}
+.menu-card-small:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
 /* ===== ปุ่มลบ ===== */
 .btn-delete {
     position: absolute;
@@ -61,24 +79,26 @@
 /* ===== รูป ===== */
 .menu-img-box {
     width: 100%;
-    height: 160px;
-    border-radius: 12px;
+    height: 170px;
+    border-radius: 14px;
     overflow: hidden;
     background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .menu-img-box img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
-    border-radius: 10px;
-    object-position: center top;
 }
 
 /* ===== ข้อความ ===== */
 .menu-text {
-    font-size: 13px;
-    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
 }
 
 /* ===== Footer ===== */
@@ -225,8 +245,9 @@ input:checked + .slider:before {
     background: #28a745;
     color: #fff;
     border: none;
-    padding: 4px 10px;
+    padding: 9px 12px;
     border-radius: 6px;
+    white-space: nowrap;
 }
 
 .btn-remove {
@@ -327,8 +348,8 @@ input:checked + .slider:before {
 
 .x-delete-btn:hover {
     background: #eb5d60;
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(255, 77, 79, 0.5);
+    color: #fff;
+    transform: scale(1.15);
 }
 
 .x-delete-btn:active {

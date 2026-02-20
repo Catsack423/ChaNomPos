@@ -20,7 +20,7 @@
 
 /* ================= LEFT PANEL ================= */
 .recipe-left {
-    width: 30%;
+    width: 35%;
     padding: 30px;
     border-right: 1px solid #ddd;
 }
@@ -49,7 +49,10 @@
 
 /* CATEGORY */
 .category-box {
-    margin-top: 30px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .category-add-form {
@@ -183,7 +186,7 @@
 }
 
 .recipe-left {
-    width: 30%;
+    width: 35%;
     padding: 30px;
     border-right: 1px solid #ddd;
 }

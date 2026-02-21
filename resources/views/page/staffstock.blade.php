@@ -1,11 +1,12 @@
 <x-app-layout>
-    <link rel="stylesheet" href="{{ asset('css/adminstock.css') }}">
-    <x-tagbaradmin /> <div style="display: flex; justify-content: center; padding: 40px; background-color: #fef4e8; min-height: 100vh;">
-        <div class="card" style="background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 900px;">
+    <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
+    <x-tagbar />
+    <div class="grid productcols">
+        <div class="card" >
             
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
                 <span style="font-size: 24px;">📦</span>
-                <h2 style="color: #8b5e3c; margin: 0;">จัดการสต็อกวัตถุดิบ</h2>
+                <h2 style=" margin: 0;">จัดการสต็อกวัตถุดิบ</h2>
             </div>
 
             <form action="{{ route('stock.update') }}" method="POST">

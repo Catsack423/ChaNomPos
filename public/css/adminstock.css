@@ -79,3 +79,349 @@
     border-radius: 999px;
     background: #999
 }
+.grid {
+    display: grid;
+    gap: 16px
+}
+
+.productcols {
+    grid-template-columns: 1.4fr 0.9fr;
+    max-width: 70%; 
+    margin: 20px auto; 
+    padding: 0 16px;
+    
+}
+
+.cols-3 {
+    grid-template-columns: repeat(3, 1fr)
+}
+
+@media (max-width: 980px) {
+    .productcols {
+        grid-template-columns: 1fr
+    }
+
+    .cols-3 {
+        grid-template-columns: 1fr
+    }
+}
+
+.card {
+    
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    
+}
+
+.card h2 {
+    margin: 0 0 10px;
+    font-size: 20px
+}
+
+.muted {
+    color: var(--muted)
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap
+}
+
+.spacer {
+    flex: 1
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #999
+}
+
+.badge.open .dot {
+    background: var(--success)
+}
+
+.badge.closed .dot {
+    background: var(--danger)
+}
+
+.badge.pending .dot {
+    background: #F59E0B
+}
+
+.badge.making .dot {
+    background: #3B82F6
+}
+
+.badge.completed .dot {
+    background: var(--success)
+}
+
+.badge.cancelled .dot {
+    background: var(--danger)
+}
+
+.btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: .15s transform, .15s background;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    transform: translateY(-1px)
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: rgba(0, 0, 0, .0)
+}
+
+.btn.danger {
+    background: var(--danger);
+    color: #fff;
+    border-color: rgba(0, 0, 0, .0)
+}
+
+.btn.success {
+    background: var(--success);
+    color: #fff;
+    border-color: rgba(0, 0, 0, .0)
+}
+
+.btn.ghost {
+    background: transparent
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.input,
+select {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    outline: none;
+    background: #fff;
+}
+
+.input:focus,
+select:focus {
+    border-color: rgba(123, 74, 46, .45);
+    box-shadow: 0 0 0 4px rgba(123, 74, 46, .12);
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 980px) {
+    .products {
+        grid-template-columns: 1fr
+    }
+}
+
+.product {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    background: linear-gradient(180deg, #fff, rgba(245, 215, 178, .25));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.thumb {
+    height: 120px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 30% 30%, var(--secondary), rgba(201, 124, 93, .55));
+    border: 1px solid rgba(0, 0, 0, .04);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    color: #3b1f10;
+}
+
+.product .name {
+    font-weight: 900;
+    font-size: 16px
+}
+
+.product .price {
+    font-weight: 900;
+    color: var(--primary)
+}
+
+.mini {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.35;
+}
+:root {
+    --primary-brown: #7B4A2E;
+    --secondary-cream: #F5D7B2;
+    --bg-soft: #FFF9F2;
+    --radius-lg: 18px;
+    /* ความมนของการ์ด */
+    --radius-sm: 12px;
+    /* ความมนของปุ่ม/input */
+    --shadow-soft: 0 8px 30px rgba(123, 74, 46, 0.08);
+}
+
+/* Container การ์ดแบบมนๆ */
+.card-container {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(123, 74, 46, 0.1);
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.card-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--secondary-cream);
+}
+
+.title {
+    margin: 0;
+    color: var(--primary-brown);
+    font-weight: 800;
+}
+
+/* ตารางแบบโค้งมน */
+.bubble-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bubble-table th {
+    background: var(--bg-soft);
+    color: var(--primary-brown);
+    padding: 15px 20px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.bubble-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f8f1eb;
+    color: #555;
+}
+
+/* ตกแต่ง Badge และตัวเลข */
+.id-badge {
+    background: var(--secondary-cream);
+    color: var(--primary-brown);
+    padding: 4px 10px;
+    border-radius: 999px;
+    /* มนกลม */
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.qty-pill {
+    background: #f0f0f0;
+    padding: 6px 15px;
+    border-radius: 999px;
+    font-weight: 800;
+    color: var(--primary-brown);
+}
+
+.qty-pill.empty {
+    background: #FFE5E5;
+    color: #D63031;
+}
+
+/* ส่วนจัดการสต็อก (Input + Buttons) */
+.stock-action-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.qty-field {
+    width: 65px;
+    padding: 10px;
+    border: 2px solid var(--secondary-cream);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-brown);
+    outline: none;
+    transition: 0.2s;
+}
+
+.qty-field:focus {
+    border-color: var(--primary-brown);
+    background: var(--bg-soft);
+}
+
+/* ปุ่มแบบวงกลมมน */
+.btn-round {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    /* กลมดิ๊กเหมือนไข่มุก */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-plus {
+    background: #4CAF50;
+}
+
+.btn-minus {
+    background: #F44336;
+}
+
+.btn-round:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.btn-round:active {
+    transform: translateY(0);
+}
+
+.text-center {
+    text-align: center;
+}

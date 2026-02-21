@@ -14,11 +14,10 @@
             <a href="{{ route('orderhistory') }}" class='btn1  act'>🧾 ประวัติการสั่งซื้อ</a>
         @endif
 
-        @if (Route::is('storeedit'))
-            <a href="{{ route('storeedit') }}" class='btn1 disable'>⚙️ สต็อค</a>
+        @if (Route::is('staffstock'))  {{-- เปลี่ยนจาก storeedit เป็น staffstock --}}
+            <a href="{{ route('staffstock') }}" class='btn1 disable'>⚙️ สต็อค</a>
         @else
-            <a href="{{ route('storeedit') }}" class='btn1   act'>⚙️ สต็อค</a>
+            <a href="{{ route('staffstock') }}" class='btn1 act'>⚙️ สต็อค</a>
         @endif
-
     </div>
 </body>

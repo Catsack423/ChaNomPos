@@ -74,7 +74,7 @@
         </div>
 
         <div class="card" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: fit-content;">
-            <h3 style="margin-bottom: 20px;">เพิ่มวัตถุดิบ table ingrediant</h3>
+            <h3 style="margin-bottom: 20px;">เพิ่มวัตถุดิบ </h3>
             <form action="{{ route('admin.stock.add') }}" method="POST">
                 @csrf
                 <div style="margin-bottom: 15px;">

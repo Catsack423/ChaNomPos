@@ -97,31 +97,32 @@
     </div>
 
     <div style="padding: 0 20px 20px 20px;">
-        <div class="card" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="margin-bottom: 15px;">Log</h2>
-            <div class="table-responsive">
-                <table class="bubble-table" style="width: 100%; border-collapse: collapse;">
-                    <thead>
+        <div class="card" style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 70%; margin: 0 auto;">
+            <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #8b5e3c;">บันทึกการเปลี่ยนแปลง (Log)</h2>
+            
+            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                <table class="bubble-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead style="position: sticky; top: 0; background: white; z-index: 1;">
                         <tr style="text-align: left; border-bottom: 2px solid #fdfaf8;">
-                            <th style="padding: 10px;">วัน-เวลา</th>
+                            <th style="padding: 8px;">วัน-เวลา</th>
                             <th>วัตถุดิบ</th>
                             <th>การกระทำ</th>
-                            <th>จำนวน</th>
+                            <th class="text-right">จำนวน</th>
                             <th>พนักงาน</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($logs as $log)
                         <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 10px;">{{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i') }}</td>
-                            <td>{{ $log->ingredient->name ?? 'N/A' }}</td>
+                            <td style="padding: 8px; color: #666;">{{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i') }}</td>
+                            <td style="font-weight: bold;">{{ $log->ingredient->name ?? 'N/A' }}</td>
                             <td>
                                 <span style="color: {{ $log->action == 'add' ? '#4CAF50' : '#F44336' }}; font-weight: bold;">
                                     {{ $log->action == 'add' ? 'เพิ่มสต็อก' : 'ลดสต็อก' }}
                                 </span>
                             </td>
-                            <td>{{ number_format($log->quantity, 2) }}</td>
-                            <td>{{ $log->user->name ?? 'System' }}</td>
+                            <td class="text-right" style="font-family: monospace;">{{ number_format($log->quantity, 2) }}</td>
+                            <td style="color: #888;">{{ $log->user->name ?? 'System' }}</td>
                         </tr>
                         @endforeach
                     </tbody>

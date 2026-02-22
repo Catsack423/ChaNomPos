@@ -45,10 +45,10 @@
 .tabs {
     margin-right: 3%;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row; /* แนะนำให้ใช้ row ปกติ แล้วใช้ justify-content ช่วย */
+    justify-content: flex-end; 
     gap: 8px;
     flex-wrap: wrap;
-    align-items: center;
 }
 
 .tab {

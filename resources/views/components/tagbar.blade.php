@@ -17,7 +17,7 @@
         @if (Route::is('storeedit'))
             <a href="{{ route('storeedit') }}" class='btn1 disable'>⚙️ สต็อค</a>
         @else
-            <a href="{{ route('storeedit') }}" class='btn1   act'>⚙️ สต็อค</a>
+            <a href="{{ route('storeedit') }}" class='btn1   act' >⚙️ สต็อค</a>
         @endif
 
     </div>

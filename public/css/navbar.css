@@ -45,7 +45,7 @@
 .tabs {
     margin-right: 3%;
     display: flex;
-    flex-direction: row; /* แนะนำให้ใช้ row ปกติ แล้วใช้ justify-content ช่วย */
+    flex-direction: row-reverse; /* แนะนำให้ใช้ row ปกติ แล้วใช้ justify-content ช่วย */
     justify-content: flex-end; 
     gap: 8px;
     flex-wrap: wrap;

@@ -1,167 +1,106 @@
-<style>
-    /* กรุณาย้ายไปfileccsถ้าจะใช้ */
-    /* คุมโทนสีหลัก */
-    :root {
-        --primary-brown: #7B4A2E;
-        --light-cream: #F5D7B2;
-        --soft-bg: #FFF9F2;
-        --danger-red: #E53E3E;
-        --border-color: #E2E8F0;
-    }
 
-    /* Container สำหรับจัดการความกว้างและ Scroll บนมือถือ */
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--border-color);
-    }
-
-    .order-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        min-width: 700px;
-        /* กันตารางเบียดกันเกินไป */
-    }
-
-    /* Header */
-    .order-table th {
-        background-color: var(--light-cream);
-        color: var(--primary-brown);
-        padding: 16px;
-        font-weight: 700;
-        font-size: 14px;
-        border-bottom: 2px solid rgba(123, 74, 46, 0.1);
-    }
-
-    /* Body Cells */
-    .order-table td {
-        padding: 16px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 14px;
-        color: #4A5568;
-    }
-
-    /* ไฮไลท์แถวเมื่อ Hover */
-    .order-table tr:hover {
-        background-color: rgba(245, 215, 178, 0.1);
-    }
-
-    /* ตกแต่งส่วนประกอบในตาราง */
-    .item-tag {
-        display: inline-block;
-        background: #EDF2F7;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        margin: 2px;
-    }
-
-    .price-text {
-        font-weight: 700;
-        color: var(--primary-brown);
-    }
-
-    .staff-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .staff-icon {
-        background: var(--light-cream);
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 12px;
-    }
-
-    /* ปุ่มลบ */
-    .btn-delete {
-        background: #fff;
-        color: var(--danger-red);
-        border: 1px solid var(--danger-red);
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-
-    .btn-delete:hover {
-        background: var(--danger-red);
-        color: #fff;
-    }
-
-    /* กรุณาย้ายไป file ccsถ้าจะใช้ */
-</style>
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/orderhistory.css') }}">
     <x-tagbar />
     <div class="grid productcols">
-        <div class="card">
-            <div class="row">
-                <h2 style="margin:0;">ประวัติการสั่งซื้อ</h2>
-                <div class="spacer"></div>
-            </div>
-            {{-- <div class="mini" style="margin-top:6px; color:red;">
+    <div class="card">
 
-                loop จาก database order table มาลง
-            </div> --}}
+        <div class="header-section">
+            <h2>ประวัติการสั่งซื้อ</h2>
             <div class="search">
-                <b>ค้นหา:</b>
-                <input type="text" class="searchinput">
-                <input type="date">
-            </div>
-            <div class="table-container">
-                <table class="order-table">
-                    <thead>
-                        <tr>
-
-                            <th>ID</th>
-                            <th>สินค้าที่สั่ง</th>
-                            <th>จำนวนทั้งหมด</th>
-                            <th>ยอดรวม</th>
-                            <th>วันที่</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#001</td>
-                            <td>
-                                <span class="item-tag">ชานมx1</span>
-                                <span class="item-tag">ชาเขียวนมx1</span>
-                                <span class="item-tag">ไข่มุกx1</span>
-                            </td>
-                            <td>3 ชิ้น</td>
-                            <td class="price-text">95 ฿</td>
-    
-                            <td>1 ม.ค. 2569</td>
-                            
-                        </tr>
-
-                        <tr>
-                            <td>#002</td>
-                            <td>
-                                <span class="item-tag">ชานมx1</span>
-                                <span class="item-tag">ไข่มุกx1</span>
-                            </td>
-                            <td>2 ชิ้น</td>
-                            <td class="price-text">95 ฿</td>
-                            <td>10 ม.ค. 2569</td>
-                            
-                        </tr>
-
-                    </tbody>
-                </table>
+                <input type="text" id="searchInput" placeholder="ค้นหา...">
             </div>
         </div>
+
+        <div class="summary-container">
+            <div class="summary-card">
+                <div class="summary-label">วันที่</div>
+                <div class="summary-value">
+                    {{ now()->format('d/m/Y') }}
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">จำนวนออเดอร์</div>
+                <div class="summary-value">
+                    {{ $sales->total() }} รายการ
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">ยอดขายรวม</div>
+                <div class="summary-value summary-highlight">
+                    {{ number_format($totalSalesAmount, 2) }} ฿
+                </div>
+            </div>
+        </div>
+
+
+        <div class="table-container">
+            <table id="order-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>สินค้าที่สั่ง</th>
+                        <th>จำนวนทั้งหมด</th>
+                        <th>ยอดรวม</th>
+                        <th>วันที่</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @if($sales->isEmpty())
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:30px;">
+                            วันนี้ยังไม่มีรายการสั่งซื้อ
+                        </td>
+                    </tr>
+                @else
+                    @foreach($sales as $sale)
+                        <tr>
+                            <td class="order-id">
+                                #{{ str_pad($sale->id, 4, '0', STR_PAD_LEFT) }}
+                            </td>
+
+                            <td>
+                                @foreach($sale->items as $item)
+                                    <span class="item-tag">
+                                        {{ $item->product->name }} x{{ $item->quantity }}
+                                    </span>
+                                @endforeach
+                            </td>
+
+                            <td class="qty-text">
+                                {{ $sale->items->sum('quantity') }} ชิ้น
+                            </td>
+
+                            <td class="price-text">
+                                {{ number_format($sale->total_price, 2) }} ฿
+                            </td>
+
+                            <td class="date-text">
+                                {{ \Carbon\Carbon::parse($sale->sold_at)->format('d/m/Y') }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+                </tbody>
+            </table>
+            {{ $sales->links() }}
+        </div>
+
     </div>
+</div>
+
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#order-table tbody tr");
+
+    rows.forEach(function(row) {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+});
+</script>
 </x-app-layout>

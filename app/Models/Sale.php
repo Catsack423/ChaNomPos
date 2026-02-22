@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Sale extends Model
 {
+    use SoftDeletes;
     use HasFactory;
     public $timestamps = false;
 
@@ -22,10 +25,6 @@ class Sale extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function items()
-    {
-        return $this->hasMany(SaleItem::class);
-    }
 
     public function payment()
     {
@@ -35,4 +34,12 @@ class Sale extends Model
     {
         return $this->hasMany(SaleItem::class);
     }
+
+    public function getTotalAttribute()
+    {
+        return $this->items->sum(fn($item) => 
+            $item->price * $item->quantity
+        );
+    }
+
 }

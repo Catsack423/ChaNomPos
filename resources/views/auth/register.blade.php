@@ -1,60 +1,50 @@
 <x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold" style="color: #4A3427;">PosChaNom</h1>
+        <p class="text-gray-500 mt-2">สร้างบัญชีพนักงานใหม่เพื่อเริ่มใช้งาน</p>
+    </div>
 
+    <div class="login-card mx-auto">
         <x-validation-errors class="mb-4" />
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
-            <div>
-                <x-label for="name" value="{{ __('Name') }}" />
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
-
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
-
-                            <div class="ms-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </x-label>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 ml-2" style="color: #4A3427;">ชื่อ-นามสกุล</label>
+                    <input id="name" class="input-pos block w-full focus:outline-none" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="ระบุชื่อพนักงาน" />
                 </div>
-            @endif
 
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
+                <div>
+                    <label class="block text-sm font-medium mb-1 ml-2" style="color: #4A3427;">อีเมล (Email)</label>
+                    <input id="email" class="input-pos block w-full focus:outline-none" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="example@mail.com" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 ml-2" style="color: #4A3427;">รหัสผ่าน</label>
+                    <input id="password" class="input-pos block w-full focus:outline-none" type="password" name="password" required autocomplete="new-password" placeholder="ระบุรหัสผ่าน" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 ml-2" style="color: #4A3427;">ยืนยันรหัสผ่านอีกครั้ง</label>
+                    <input id="password_confirmation" class="input-pos block w-full focus:outline-none" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="ยืนยันรหัสผ่านอีกครั้ง" />
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <button class="w-full btn-brown py-4 text-lg font-bold shadow-md transition duration-200">
+                    ยืนยันการสมัครพนักงาน
+                </button>
+            </div>
+
+            <div class="mt-6 text-center">
+                <a class="text-sm text-gray-500 hover:text-[#4A3427] transition" href="{{ route('login') }}">
+                    มีบัญชีอยู่แล้ว? <span class="font-bold text-[#7A533E] underline decoration-2 underline-offset-4">เข้าสู่ระบบที่นี่</span>
                 </a>
-
-                <x-button class="ms-4">
-                    {{ __('Register') }}
-                </x-button>
             </div>
         </form>
-    </x-authentication-card>
+    </div>
+
+    <p class="mt-8 text-gray-400 text-sm text-center">© 2024 POSCHANOM SYSTEM</p>
 </x-guest-layout>

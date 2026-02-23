@@ -43,6 +43,48 @@
 }
 
 
+
+
+.tabs {
+    margin-right: 3%;
+    display: flex;
+    flex-direction: row; 
+    justify-content: flex-end; 
+    gap: 5px;
+    /* แก้ไขจุดนี้ */
+    flex-wrap: nowrap;      /* ห้ามขึ้นบรรทัดใหม่ */
+    overflow-x: auto;       /* ถ้าล้นให้ scroll แนวนอนได้ */
+    -webkit-overflow-scrolling: touch; /* ให้ scroll ลื่นใน iOS */
+}
+
+/* ซ่อน scrollbar (ถ้าต้องการความสวยงาม) */
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    color: #3f3f46;
+}
+
+.tab.active{
+      background:rgba(123,74,46,.08);
+      border-color:rgba(123,74,46,.35);
+      color:var(--primary);
+}
+
+.tab:hover {
+    background: rgba(123, 74, 46, .08);
+    border-color: rgba(123, 74, 46, .35);
+    color: var(--primary);
+}
+
+
 @media(max-width:980px) {
   .nav {
     padding: 10px 8px; /* ลด padding ลงหน่อยเพื่อให้มีที่ว่าง */
@@ -57,7 +99,7 @@
     display: flex;
     flex-wrap: nowrap; /* ห้ามขึ้นบรรทัดใหม่ */
     overflow-x: auto;  /* ถ้าปุ่มเยอะเกินหน้าจอ ให้ใช้นิ้วปัดข้างเอา */
-    gap: 5px;          /* ลดระยะห่างระหว่างปุ่มลง */
+    gap: 4px;          /* ลดระยะห่างระหว่างปุ่มลง */
     justify-content: flex-end; /* ถ้าอยากให้ปุ่มชิดขวา */
   }
 
@@ -105,13 +147,14 @@
         flex-wrap: nowrap !important; /* บังคับห้ามขึ้นบรรทัดใหม่เด็ดขาด */
         overflow-x: auto; /* ถ้าพื้นที่ไม่พอ ให้ใช้นิ้วปัดซ้าย-ขวาดูปุ่มเอา */
         padding-bottom: 4px; /* เผื่อพื้นที่ให้ Scroll นิดนึง */
-        gap: 4px;
+        gap: 0px;
         -webkit-overflow-scrolling: touch; /* ให้เลื่อนลื่นๆ ใน iOS */
     }
 
     /* ซ่อนแถบ Scrollbar เพื่อความสวยงาม */
     .tabs::-webkit-scrollbar {
         display: none;
+        
     }
 
     /* 4. ปรับขนาดปุ่มให้เล็กลงแต่ยังกดง่าย */
@@ -127,44 +170,3 @@
         display: none;
     }
 }
-
-.tabs {
-    margin-right: 3%;
-    display: flex;
-    flex-direction: row; 
-    justify-content: flex-end; 
-    gap: 1px;
-    /* แก้ไขจุดนี้ */
-    flex-wrap: nowrap;      /* ห้ามขึ้นบรรทัดใหม่ */
-    overflow-x: auto;       /* ถ้าล้นให้ scroll แนวนอนได้ */
-    -webkit-overflow-scrolling: touch; /* ให้ scroll ลื่นใน iOS */
-}
-
-/* ซ่อน scrollbar (ถ้าต้องการความสวยงาม) */
-.tabs::-webkit-scrollbar {
-    display: none;
-}
-
-.tab {
-    padding: 9px 12px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: #fff;
-    cursor: pointer;
-    font-weight: 600;
-    color: #3f3f46;
-}
-
-.tab.active{
-      background:rgba(123,74,46,.08);
-      border-color:rgba(123,74,46,.35);
-      color:var(--primary);
-}
-
-.tab:hover {
-    background: rgba(123, 74, 46, .08);
-    border-color: rgba(123, 74, 46, .35);
-    color: var(--primary);
-}
-
-

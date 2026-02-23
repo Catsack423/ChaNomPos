@@ -15,7 +15,7 @@ class Product extends Model
         'is_active',
         'descripsion',
         'imgurl',
-        'category_id' 
+        'category_id'
     ];
 
     public function recipes()
@@ -31,5 +31,10 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_product');
     }
 }

@@ -12,13 +12,13 @@
             <a href="{{ route('adminmenu') }}" class='btn1 disable'>จัดการเมนู</a>
         @else
             <a href="{{ route('adminmenu') }}" class='btn1  act'>จัดการเมนู</a>
-        @endif 
+        @endif
 
         @if (Route::is('adminstock'))
             <a href="{{ route('adminstock') }}" class='btn1 disable'>จัดการสต็อค</a>
         @else
             <a href="{{ route('adminstock') }}" class='btn1   act'>จัดการสต็อค</a>
-        @endif  
+        @endif
 
     </div>
 </body>

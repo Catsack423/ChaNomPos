@@ -10,9 +10,11 @@
                     grid-template-columns: 1fr auto;
                     gap: 10px;
                 }
+
                 .recipe-form {
                     grid-template-columns: 1.4fr 1fr auto;
                 }
+
                 .form-input,
                 .form-select {
                     margin: 5px;
@@ -20,6 +22,7 @@
                     border: 1.5px solid #cbd5e1;
                     border-radius: 10px;
                 }
+
                 .modal-footer-custom {
                     padding: 20px;
                     border-top: 1px solid #eee;
@@ -37,22 +40,20 @@
 
                     {{-- Grid เมนู --}}
                     <div class="menu-grid-small">
-                        @foreach($products as $product)
-                            <div class="menu-card-small">
+                        @foreach ($products as $product)
+                            <div class="menu-card-small" style="">
                                 {{-- ปุ่มลบ --}}
-                                <form action="{{ route('adminmenu.destroy', $product->id) }}"
-                                      method="POST" onsubmit="return confirm('ยืนยันการลบเมนูนี้?')"
-                                      class="d-flex justify-content-end">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="x-delete-btn" title="ลบ">✕</button>
-                                </form>
+
 
                                 {{-- รูป --}}
                                 <div class="menu-img-box">
-                                    @if($product->imgurl)
-                                        <img src="{{ asset($product->imgurl) }}" alt="">
+                                    @if ($product->imgurl)
+                                        <img src="{{ !empty($product->imgurl) && file_exists(public_path($product->imgurl))
+                                            ? asset($product->imgurl)
+                                            : asset('img/CV-milk-tea.png') }}"
+                                            alt="ไม่พบรูปภาพในฐานข้อมูล">
                                     @endif
+
                                 </div>
 
                                 {{-- ข้อมูล --}}
@@ -67,19 +68,30 @@
                                         @csrf
                                         @method('PATCH')
                                         <label class="switch">
-                                            <input type="checkbox" onchange="this.form.submit()" {{ $product->is_active ? 'checked' : '' }}>
+                                            <input type="checkbox" onchange="this.form.submit()"
+                                                {{ $product->is_active ? 'checked' : '' }}>
                                             <span class="slider round"></span>
                                         </label>
                                     </form>
-
-                                    {{-- ปุ่มแก้ไข ดึงข้อมูลใส่ data-* attributes --}}
-                                    <button type="button" class="edit-btn"
+                                    <div class="bottom-right-group" style="display: flex; flex-direction: row;">
+                                        <button type="button" class="edit-btn"
                                             data-product="{{ json_encode($product) }}"
                                             data-categories="{{ json_encode($product->categories->pluck('id')) }}"
                                             data-recipes="{{ json_encode($product->recipes) }}"
                                             onclick="openMenuModal('edit', this)">
-                                        แก้ไขเมนู
-                                    </button>
+                                            แก้ไขเมนู
+                                        </button>
+                                        <form action="{{ route('adminmenu.destroy', $product->id) }}" method="POST"
+                                            onsubmit="return confirm('ยืนยันการลบเมนูนี้?')"
+                                            class="d-flex justify-content-end">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="x-delete-btn" title="ลบ"
+                                                style="">✕</button>
+                                        </form>
+                                    </div>
+                                    {{-- ปุ่มแก้ไข ดึงข้อมูลใส่ data-* attributes --}}
+
                                 </div>
                             </div>
                         @endforeach
@@ -94,7 +106,8 @@
 
                         <button type="button" class="btn-close modal-close" data-bs-dismiss="modal"></button>
 
-                        <form id="mainMenuForm" method="POST" action="" enctype="multipart/form-data" class="create-form">
+                        <form id="mainMenuForm" method="POST" action="" enctype="multipart/form-data"
+                            class="create-form">
                             @csrf
                             <input type="hidden" name="_method" id="formMethod" value="POST">
 
@@ -104,23 +117,30 @@
                                     <label class="image-upload">
                                         <img id="previewImage" src="{{ asset('img/logo.png') }}" alt="preview">
                                         <span class="choose-image-text">เลือกรูป</span>
-                                        <input type="file" name="image" id="imageInput" accept="image/*" hidden onchange="previewUploadImage(this)">
+                                        <input type="file" name="image" id="imageInput" accept="image/*" hidden
+                                            onchange="previewUploadImage(this)">
                                     </label>
 
                                     <div class="category-box">
                                         <h6 class="section-title">ประเภทสินค้า</h6>
                                         <div id="categoryContainer">
                                             <div style="display:flex; gap:10px; align-items: center;">
-                                                <input type="text" id="newCategoryName" placeholder="เพิ่มประเภทใหม่" class="form-input">
-                                                <button type="button" class="btn-add" onclick="createCategoryAjax()">+ เพิ่ม</button>
+                                                <input type="text" id="newCategoryName" placeholder="เพิ่มประเภทใหม่"
+                                                    class="form-input">
+                                                <button type="button" class="btn-add" onclick="createCategoryAjax()">+
+                                                    เพิ่ม</button>
                                             </div>
                                             <div id="categoryList">
                                                 @foreach ($categories as $category)
-                                                <div class="cat-item" data-id="{{ $category->id }}" style="display:flex; align-items:center; gap:8px; margin-bottom:8px; margin-top:8px;">
-                                                    <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" class="category-checkbox">
-                                                    <span style="flex:1;">{{ $category->name }}</span>
-                                                    <button type="button" onclick="deleteCategory({{ $category->id }})" class="x-delete-btn">✕</button>
-                                                </div>
+                                                    <div class="cat-item" data-id="{{ $category->id }}"
+                                                        style="display:flex; align-items:center; gap:8px; margin-bottom:8px; margin-top:8px;">
+                                                        <input type="checkbox" name="category_ids[]"
+                                                            value="{{ $category->id }}" class="category-checkbox">
+                                                        <span style="flex:1;">{{ $category->name }}</span>
+                                                        <button type="button"
+                                                            onclick="deleteCategory({{ $category->id }})"
+                                                            class="x-delete-btn">✕</button>
+                                                    </div>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -131,15 +151,18 @@
                                 <div class="recipe-right">
                                     <h5 class="section-title" id="modalTitleText">ข้อมูลสินค้า</h5>
 
-                                    <input type="text" name="name" id="productName" placeholder="ชื่อเมนู" required class="form-input">
-                                    <input type="number" name="price" id="productPrice" placeholder="ราคา" required class="form-input">
+                                    <input type="text" name="name" id="productName" placeholder="ชื่อเมนู"
+                                        required class="form-input">
+                                    <input type="number" step="0.01" name="price" id="productPrice"
+                                        placeholder="ราคา" required class="form-input">
                                     <textarea name="description" id="productDesc" placeholder="รายละเอียด" required class="form-input"></textarea>
 
                                     <hr>
 
                                     <h5 class="section-title" style="margin: 10px">สูตรสินค้า</h5>
                                     <div id="recipeContainer"></div>
-                                    <button type="button" class="btn-add" onclick="addRecipeRow()" style="margin-top: 10px; display: block;">+ เพิ่มวัตถุดิบ</button>
+                                    <button type="button" class="btn-add" onclick="addRecipeRow()"
+                                        style="margin-top: 10px; display: block;">+ เพิ่มวัตถุดิบ</button>
                                 </div>
                             </div>
                             <button type="submit" class="save-btn">บันทึก</button>
@@ -151,13 +174,15 @@
             {{-- Template สำหรับ Select วัตถุดิบ --}}
             <div id="recipeTemplate" style="display: none;">
                 <div class="recipe-form recipe-row">
-                    <select name="ingredients[]" class="form-select ingredient-select" onchange="updateIngredientOptions()">
+                    <select name="ingredients[]" class="form-select ingredient-select"
+                        onchange="updateIngredientOptions()">
                         <option value="">-- เลือกวัตถุดิบ --</option>
                         @foreach ($ingredients as $ing)
                             <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->unit }})</option>
                         @endforeach
                     </select>
-                    <input type="number" name="amounts[]" placeholder="จำนวน" class="form-input amount-input" step="0.01">
+                    <input type="number" name="amounts[]" placeholder="จำนวน" class="form-input amount-input"
+                        step="0.01">
                     <button type="button" class="x-delete-btn" onclick="removeRecipeRow(this)">✕</button>
                 </div>
             </div>
@@ -203,18 +228,18 @@
                         document.getElementById('productPrice').value = product.price;
                         document.getElementById('productDesc').value = product.description || '';
 
-                        if(product.imgurl) {
+                        if (product.imgurl) {
                             document.getElementById('previewImage').src = `${baseAppUrl}/${product.imgurl}`;
                         }
 
                         // ติ๊กหมวดหมู่
                         categories.forEach(catId => {
                             const checkbox = document.querySelector(`.category-checkbox[value="${catId}"]`);
-                            if(checkbox) checkbox.checked = true;
+                            if (checkbox) checkbox.checked = true;
                         });
 
                         // เพิ่มสูตร
-                        if(recipes && recipes.length > 0) {
+                        if (recipes && recipes.length > 0) {
                             recipes.forEach(recipe => addRecipeRow(recipe.ingredient_id, recipe.amount));
                         } else {
                             addRecipeRow();
@@ -247,7 +272,8 @@
 
                     selects.forEach(select => {
                         Array.from(select.options).forEach(option => {
-                            if (option.value !== '' && selectedValues.includes(option.value) && option.value !== select.value) {
+                            if (option.value !== '' && selectedValues.includes(option.value) && option.value !==
+                                select.value) {
                                 option.disabled = true;
                             } else {
                                 option.disabled = false;
@@ -259,19 +285,29 @@
                 function previewUploadImage(input) {
                     if (input.files && input.files[0]) {
                         const reader = new FileReader();
-                        reader.onload = function(e) { document.getElementById('previewImage').src = e.target.result; };
+                        reader.onload = function(e) {
+                            document.getElementById('previewImage').src = e.target.result;
+                        };
                         reader.readAsDataURL(input.files[0]);
                     }
                 }
 
                 function createCategoryAjax() {
                     let name = document.getElementById('newCategoryName').value;
-                    if (!name) { alert('กรุณากรอกชื่อประเภท'); return; }
+                    if (!name) {
+                        alert('กรุณากรอกชื่อประเภท');
+                        return;
+                    }
 
                     fetch("{{ route('adminmenu.category.ajaxStore') }}", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
-                        body: JSON.stringify({ name: name })
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            name: name
+                        })
                     }).then(res => res.json()).then(data => {
                         if (data.success) {
                             let category = data.category;
@@ -291,9 +327,13 @@
                     if (!confirm('ลบประเภทนี้ออกจากระบบถาวร ?')) return;
                     fetch(`/adminmenu/category/ajax-delete/${id}`, {
                         method: "DELETE",
-                        headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        }
                     }).then(res => res.json()).then(data => {
-                        if (data.success) { document.querySelector(`[data-id='${id}']`).remove(); }
+                        if (data.success) {
+                            document.querySelector(`[data-id='${id}']`).remove();
+                        }
                     });
                 }
             </script>

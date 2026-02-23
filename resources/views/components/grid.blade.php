@@ -15,7 +15,8 @@
 
         @media (max-width: 980px) {
             .cols {
-                grid-template-columns: 1fr
+                grid-template-columns: 1fr;
+                max-width: 90%;
             }
         }
 

@@ -12,7 +12,7 @@
             <div class="logo">
                 <img id="logopic" src="{{ asset('img/logo.png') }}" alt="eror">
             </div>
-            <div>
+            <div> 
                 <div >PosChaNom</div>
             </div>
         </div>

@@ -30,8 +30,7 @@
                 }
             </style>
 
-            <div class="container mt-4">
-                {{-- กรอบใหญ่ --}}
+            
                 <div class="menu-wrapper">
                     <div class="menu-header">
                         <h4>เมนู</h4>
@@ -73,7 +72,10 @@
                                             <span class="slider round"></span>
                                         </label>
                                     </form>
-                                    <div class="bottom-right-group" style="display: flex; flex-direction: row;">
+
+                                    {{-- กลุ่มปลุ่มล่างขวาของเมนู --}}
+                                    <div class="bottom-right-group"
+                                        style="display: flex; flex-direction: row; column-gap: 2px;">
                                         <button type="button" class="edit-btn"
                                             data-product="{{ json_encode($product) }}"
                                             data-categories="{{ json_encode($product->categories->pluck('id')) }}"
@@ -86,8 +88,8 @@
                                             class="d-flex justify-content-end">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="x-delete-btn" title="ลบ"
-                                                style="">✕</button>
+                                            <button type="submit" class="btn-delete" title="ลบ"
+                                                style="">ลบ</button>
                                         </form>
                                     </div>
                                     {{-- ปุ่มแก้ไข ดึงข้อมูลใส่ data-* attributes --}}
@@ -97,7 +99,7 @@
                         @endforeach
                     </div>
                 </div>
-            </div>
+            
 
             {{-- ================= MODAL หลักอันเดียว ================= --}}
             <div class="modal fade" id="mainMenuModal" tabindex="-1">
@@ -165,7 +167,11 @@
                                         style="margin-top: 10px; display: block;">+ เพิ่มวัตถุดิบ</button>
                                 </div>
                             </div>
-                            <button type="submit" class="save-btn">บันทึก</button>
+                            <div class="row-bottom"
+                                style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                                <button type="submit" class="save-btn">บันทึก</button>
+                            </div>
+
                         </form>
                     </div>
                 </div>

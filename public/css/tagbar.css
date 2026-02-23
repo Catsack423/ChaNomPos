@@ -19,7 +19,15 @@
     gap: 4px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* ใส่เงาบางๆ ให้ดูมีมิติ */
 }
+@media screen and (max-width: 601px) {
+    .actions {
+        display: flex; 
+        width: max-content; /* ให้กว้างเท่ากับเนื้อหาข้างใน */
+        margin-left: auto;
+        margin-right: auto;
+    }
 
+}
 .btn1 {
     border: none; /* เอาเส้นขอบออกเพื่อให้ดูเป็นก้อนเดียวกับแถบ */
     background: transparent; /* ปกติให้เป็นพื้นหลังโปร่งแสง */

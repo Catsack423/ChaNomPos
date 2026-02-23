@@ -26,7 +26,7 @@
     border-radius: 25px;
     background: #fff;
     color: #7a4a2e;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     display: inline-flex;
     align-items: center;
@@ -37,6 +37,26 @@
     background: #7a4a2e;
     color: #fff;
 }
+
+/* ===== Card เมนู ===== */
+@media screen and (max-width: 432px) {
+    
+    .menu-grid-small {
+        /* ปรับให้ขนาดขั้นต่ำเหลือแค่ 140px เพื่อให้เบียดกัน 2 คอลัมน์ได้ */
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px; /* ลดช่องว่างระหว่างการ์ดด้วย */
+    }
+
+    .menu-card-small {
+        padding: 10px;
+        min-height: 200px; /* ลดความสูงขั้นต่ำลงให้รับกับขนาดที่เล็กลง */
+    }
+
+    .menu-img-box {
+        height: 100px; /* ลดความสูงรูปภาพลงอีกนิดให้สมส่วน */
+    }
+}
+
 /* ===== Grid เล็ก ===== */
 .menu-grid-small {
     display: grid;
@@ -44,36 +64,22 @@
     gap: 30px;
 }
 
-/* ===== Card เมนู ===== */
+/* ส่วนของ Card เดิมที่ปรับให้ยืดหยุ่นขึ้น */
 .menu-card-small {
     background: #ffffff;
     border-radius: 16px;
     padding: 18px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.07);
     position: relative;
-
-    height: 300px;
+    
+    /* แก้จาก max เป็นความกว้างที่สัมพันธ์กับ Grid */
+    width: 100%; 
+    box-sizing: border-box; 
+    
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     transition: 0.3s ease;
-}
-.menu-card-small:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-}
-/* ===== ปุ่มลบ ===== */
-.btn-delete {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    border: none;
-    background: #f3f3f3;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
 }
 
 /* ===== รูป ===== */
@@ -305,56 +311,34 @@ input:checked + .slider:before {
     grid-template-columns: 1fr auto;
 }
 .edit-btn {
-    background: linear-gradient(135deg, #7b4a2e, #77482d);
-    color: #ffffff;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 8px;
+    background-color: #FFFFFF; 
+    
+    /* สีน้ำตาลชานม (Milk Tea Brown) */
+    color: #8e5a3d; 
+    border: 1px solid #8e5a3d; 
+    
+    /* ความโค้งมนและระยะห่าง */
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 14px;
-    font-weight: 600;
-    transition: all 0.25s ease;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
 }
 
 .edit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, #7b4a2e, #77482d);
+    background: #8e5a3d; /* สว่างขึ้นเล็กน้อย */
+    border-color: #8e5a3d;
+    color: white;
+    /* เอา transform และ box-shadow ออกเพื่อให้ดูนิ่ง */
 }
 
+/* Active ให้ยุบตัวลงนิดเดียวพอเป็นพิธี */
 .edit-btn:active {
-    transform: scale(0.96);
-}
-.x-delete-btn {
-    all: unset;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-
-    color: #000000;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1;
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 4px 10px rgba(255, 77, 79, 0.35);
-    transition: all 0.25s ease;
+    transform: scale(0.95);
 }
 
-.x-delete-btn:hover {
-    background: #eb5d60;
-    color: #fff;
-    transform: scale(1.15);
-}
-
-.x-delete-btn:active {
-    transform: scale(0.9);
-}
 .choose-image-text {
     display: inline-block;
     padding: 6px 14px;
@@ -368,4 +352,25 @@ input:checked + .slider:before {
 
 .choose-image-text:hover {
     background: #969595;
+}
+
+.btn-delete {
+    background: #ffffff;
+    color: #ff0000;
+    border: 1px solid #e53e3e;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #ff0000;
+    color: white;
+    border-color: #ffffff;
+}
+
+.btn-delete:active {
+    transform: scale(0.95);
 }

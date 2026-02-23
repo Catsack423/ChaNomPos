@@ -13,10 +13,16 @@
 
         }
 
+
+        @media (max-width: 1280px) {
+            .cols {
+                max-width: 90%;
+            }
+        }
         @media (max-width: 980px) {
             .cols {
                 grid-template-columns: 1fr;
-                max-width: 90%;
+               
             }
         }
 

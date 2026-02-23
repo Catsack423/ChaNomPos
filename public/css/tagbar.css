@@ -19,14 +19,28 @@
     gap: 4px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* ใส่เงาบางๆ ให้ดูมีมิติ */
 }
-@media screen and (max-width: 601px) {
+@media screen and (max-width: 980px) {
     .actions {
         display: flex; 
-        width: max-content; /* ให้กว้างเท่ากับเนื้อหาข้างใน */
+        font-size: 14px;
+        width: fit-content;; /* ให้กว้างเท่ากับเนื้อหาข้างใน */
         margin-left: auto;
         margin-right: auto;
     }
 
+}
+
+@media(max-width:421px) {
+  .actions{
+    font-size: 12px;
+  }
+}
+
+
+@media(max-width:354px) {
+  .actions{
+    font-size: 10px;
+  }
 }
 .btn1 {
     border: none; /* เอาเส้นขอบออกเพื่อให้ดูเป็นก้อนเดียวกับแถบ */

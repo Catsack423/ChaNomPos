@@ -42,13 +42,107 @@
     /* ปรับ margin เป็น % เพื่อให้ dynamic */
 }
 
+
+@media(max-width:980px) {
+  .nav {
+    padding: 10px 8px; /* ลด padding ลงหน่อยเพื่อให้มีที่ว่าง */
+  }
+
+  .brand {
+    margin-left: 0; /* เอา margin ออกเพื่อให้ชิดซ้ายสุด */
+  }
+
+  .tabs {
+    margin-right: 0 !important; /* ใช้ !important ถ้ามีตัวอื่นมาทับ */
+    display: flex;
+    flex-wrap: nowrap; /* ห้ามขึ้นบรรทัดใหม่ */
+    overflow-x: auto;  /* ถ้าปุ่มเยอะเกินหน้าจอ ให้ใช้นิ้วปัดข้างเอา */
+    gap: 5px;          /* ลดระยะห่างระหว่างปุ่มลง */
+    justify-content: flex-end; /* ถ้าอยากให้ปุ่มชิดขวา */
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 6px 10px; /* ลดขนาดปุ่มลงเพื่อให้พอดีจอเล็ก */
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .spae {
+    /* ถ้าต้องการให้ปุ่มไปชิดขวา ให้ค่านี้เป็น flex: 1 ต่อไป */
+    /* ถ้าต้องการให้ปุ่มมาติดกับโลโก้ ให้เป็น flex: 0 */
+    flex: 1; 
+  }
+}
+
+  @media (max-width: 421px) {
+    /* 1. ปรับ Container หลักให้ชิดขอบมากขึ้น */
+    .nav {
+        padding: 8px 10px; /* ลด Padding บนล่างและซ้ายขวา */
+        justify-content: space-between;
+        gap: 5px;
+    }
+
+    /* 2. ลดขนาดโลโก้และชื่อร้าน */
+    .brand {
+        margin-left: 0;
+        gap: 6px; /* ลดช่องว่างระหว่างรูปกับชื่อ */
+        min-width: fit-content;
+    }
+
+    #logopic {
+        max-width: 35px; /* ลดขนาดโลโก้ลงให้กะทัดรัด */
+        margin-left: 0;
+    }
+
+    .brand > div:last-child {
+        font-size: 14px; /* ลดขนาดชื่อร้าน PosChaNom */
+    }
+
+    /* 3. จัดการปุ่มไม่ให้ตกบรรทัด */
+    .tabs {
+        margin-right: 0 !important;
+        flex-wrap: nowrap !important; /* บังคับห้ามขึ้นบรรทัดใหม่เด็ดขาด */
+        overflow-x: auto; /* ถ้าพื้นที่ไม่พอ ให้ใช้นิ้วปัดซ้าย-ขวาดูปุ่มเอา */
+        padding-bottom: 4px; /* เผื่อพื้นที่ให้ Scroll นิดนึง */
+        gap: 4px;
+        -webkit-overflow-scrolling: touch; /* ให้เลื่อนลื่นๆ ใน iOS */
+    }
+
+    /* ซ่อนแถบ Scrollbar เพื่อความสวยงาม */
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* 4. ปรับขนาดปุ่มให้เล็กลงแต่ยังกดง่าย */
+    .tab {
+        padding: 6px 10px;
+        font-size: 11px;
+        flex-shrink: 0; /* สำคัญ: ห้ามให้ปุ่มหดตัวจนตัวหนังสือเบี้ยว */
+        white-space: nowrap; /* ห้ามตัวหนังสือขึ้นบรรทัดใหม่ */
+    }
+
+    /* 5. ปิดตัวดันพื้นที่ */
+    .spae {
+        display: none;
+    }
+}
+
 .tabs {
     margin-right: 3%;
     display: flex;
-    flex-direction: row-reverse; /* แนะนำให้ใช้ row ปกติ แล้วใช้ justify-content ช่วย */
+    flex-direction: row; 
     justify-content: flex-end; 
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 1px;
+    /* แก้ไขจุดนี้ */
+    flex-wrap: nowrap;      /* ห้ามขึ้นบรรทัดใหม่ */
+    overflow-x: auto;       /* ถ้าล้นให้ scroll แนวนอนได้ */
+    -webkit-overflow-scrolling: touch; /* ให้ scroll ลื่นใน iOS */
+}
+
+/* ซ่อน scrollbar (ถ้าต้องการความสวยงาม) */
+.tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .tab {

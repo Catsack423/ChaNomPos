@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href=" {{ asset('css/global.css') }}">
     <link rel="stylesheet" href=" {{ asset('css/navbar.css') }}">
+</head>
+<body>
     <div class="nav">
         <a href="{{ route('dashboard') }}">
             <div class="brand">
@@ -18,14 +20,13 @@
                 </div>
             </div>
         </a>
-        <div style="flex: 1;"></div>
+        <div style="flex: 1;" class="spae"></div>
         <div class="tabs" role="tablist" aria-label="Sections">
-            <form method="POST" action="{{ route('logout') }}" style="display: contents;">
-                @csrf
-                <button type="submit" class="tab">
-                    {{ __('Log Out') }}
-                </button>
-            </form>
+             @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
+                <a href="{{ route('dashboard') }}"><button class="tab" data-target="user">Staff</button></a>
+            @else
+                <a href="{{ route('dashboard') }}"><button class="tab active" data-target="user">Staff</button></a>
+            @endif
 
             @if (auth()->check() && auth()->user()->admin)
                 @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
@@ -37,15 +38,15 @@
                 @endif
             @endif
 
-            @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
-                <a href="{{ route('dashboard') }}"><button class="tab" data-target="user">Staff</button></a>
-            @else
-                <a href="{{ route('dashboard') }}"><button class="tab active" data-target="user">Staff</button></a>
-            @endif
+           
 
-
+            <form method="POST" action="{{ route('logout') }}" style="display: contents;">
+                @csrf
+                <button type="submit" class="tab">
+                    {{ __('Log Out') }}
+                </button>
+            </form>
         </div>
     </div>
-</head>
-
+</body>
 </html>

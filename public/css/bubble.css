@@ -32,14 +32,22 @@ body {
 
 .cols-2 {
   grid-template-columns: 1.4fr 0.9fr;
-  max-width: 70%;
+  max-width: 80%;
   margin: 20px auto;
   padding: 0 16px;
 }
+@media(max-width:1024px) {
+  .cols-2 {
+    
+    max-width: 90%;
+  }
+}
+
 
 @media(max-width:980px) {
   .cols-2 {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
+    
   }
 }
 
@@ -98,23 +106,12 @@ select {
 }
 
 .products {
+  flex-wrap: wrap;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-@media(max-width:980px) {
-  .products {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-
-@media(max-width:740px) {
-  .products {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 .product {
   border: 1px solid var(--border);
@@ -183,10 +180,44 @@ select {
   font-size: 13px;
   color: var(--muted);
 }
+@media(max-width:741px) {
+   .mini{
+    display: none;
+   } 
+}
 
 .pill {
   padding: 6px 10px;
   border-radius: 12px;
   border: 1px solid var(--border);
   font-weight: 800;
+}
+
+@media(max-width:841px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+}
+
+
+@media(max-width:413px) {
+  .products {
+    width: 100%; /* แก้เป็น 100% หรือลบทิ้ง */
+    font-size: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px; /* ลดระยะห่างหน่อยถ้าจอเล็กมาก */
+  }
+
+  .input, select { /* เพิ่ม select เข้าไปด้วยจะได้เล็กลงพร้อมกัน */
+    font-size: 12px;
+    padding: 8px; /* ลด padding เพื่อให้ input ไม่ดูเทอะทะ */
+  }
+}
+
+@media(max-width:354px) {
+  .products {
+    grid-template-columns: repeat(1, 1fr); /* จอเล็กมากให้เหลือแถวละ 1 ใบ */
+    width: 100%;
+  }
 }

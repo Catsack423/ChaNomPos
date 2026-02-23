@@ -126,14 +126,7 @@
 .toggle-dot.off { background: #9ca3af; }
 
 /* edit */
-.btn-edit {
-    background: #7a4a2e;
-    color: #fff;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 8px;
-    text-decoration: none;
-}
+
 .cat-item {
     display: flex;
     align-items: center;
@@ -310,7 +303,9 @@ input:checked + .slider:before {
 .category-form {
     grid-template-columns: 1fr auto;
 }
-.edit-btn {
+
+.editpum {
+    box-sizing: border-box !important;
     background-color: #FFFFFF; 
     
     /* สีน้ำตาลชานม (Milk Tea Brown) */
@@ -327,7 +322,7 @@ input:checked + .slider:before {
     
 }
 
-.edit-btn:hover {
+.editpum:hover {
     background: #8e5a3d; /* สว่างขึ้นเล็กน้อย */
     border-color: #8e5a3d;
     color: white;
@@ -335,7 +330,7 @@ input:checked + .slider:before {
 }
 
 /* Active ให้ยุบตัวลงนิดเดียวพอเป็นพิธี */
-.edit-btn:active {
+.editpum:active {
     transform: scale(0.95);
 }
 
@@ -373,4 +368,31 @@ input:checked + .slider:before {
 
 .btn-delete:active {
     transform: scale(0.95);
+}
+
+.bottom-right-group {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2px; /* เพิ่มห่างหน่อยจะได้ไม่เบียด */
+    align-items: stretch; /* บังคับให้สูงเท่ากัน */
+    width: 70%; /* ให้เต็มความกว้างการ์ด */
+    justify-content: flex-end
+}
+
+
+
+.editpum, 
+.btn-delete {
+    right: -1;
+     /* ให้เต็มพื้นที่ที่ flex แบ่งมาให้ */
+    height: 40px; /* ล็อกความสูงให้เท่ากันเป๊ะ */
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid; /* ใช้เส้นขอบเท่ากัน */
+    transition: 0.2s;
 }

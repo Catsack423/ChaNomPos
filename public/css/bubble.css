@@ -45,9 +45,9 @@ body {
 
 /* สำหรับ iPad แนวตั้ง และแท็บเล็ตขนาดใกล้เคียง */
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
-    .cols-2 {
-        max-width: 90%;
-    }
+  .cols-2 {
+    max-width: 90%;
+  }
 }
 
 /* สำหรับ iPad แนวนอน */
@@ -115,6 +115,7 @@ select {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 .product {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -126,15 +127,31 @@ select {
 }
 
 .thumb {
-  height: 110px;
+  width: 100%;
+  /* บังคับกว้างเต็มพื้นที่การ์ด */
+  height: 140px;
+  /* ล็อกความสูงเท่าเดิมที่คุณตั้งไว้ */
   border-radius: 12px;
   background: radial-gradient(circle at 30% 30%, var(--secondary), rgba(201, 124, 93, .55));
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   place-items: center;
   font-weight: 900;
   font-size: 20px;
 }
 
+.thumb img {
+    /* หัวใจสำคัญคือ 2 บรรทัดนี้ */
+    width: 100%;       /* บังคับกว้างเต็มกล่อง */
+    height: 100%;      /* บังคับสูงเต็มกล่อง */
+    
+    /* เลือกใช้อันใดอันหนึ่งตามต้องการ: */
+    object-fit: cover;   /* ขยายรูปให้เต็มพื้นที่ (รูปอาจโดนตัดขอบนิดหน่อยแต่ดูสวยและเท่ากันเป๊ะ) */
+    /* object-fit: contain; */ /* ถ้ารูปห้ามโดนตัดเลย (แต่อาจเห็นขอบพื้นหลังสีน้ำตาลซ้ายขวาแทน) */
+    
+    transition: transform 0.3s ease; /* แถม: เผื่ออยากให้รูปขยับเวลา Hover */
+}
 .product .name {
   font-weight: 900
 }

@@ -40,7 +40,10 @@
                             data-type="{{ $product->category_id }}">
 
                             <div class="thumb">
-                                {{ mb_substr($product->name, 0, 1) }}
+                                <img src="{{ !empty($product->imgurl) && file_exists(public_path($product->imgurl))
+                                         ? asset($product->imgurl)
+                                         : asset('img/CV-milk-tea.png') }}"
+                                         alt="ไม่พบรูปภาพในฐานข้อมูล">
                             </div>
 
                             <div class="name">{{ $product->name }}</div>

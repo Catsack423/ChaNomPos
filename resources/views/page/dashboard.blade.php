@@ -37,13 +37,13 @@
                 <div id="productList" class="products">
                     @foreach ($products as $product)
                         <div class="product" data-name="{{ strtolower($product->name) }}"
-                            data-type="{{ $product->category_id }}">
+                            data-type="{{ $product->categories->pluck('id')->implode(',') }}">
 
                             <div class="thumb">
                                 <img src="{{ !empty($product->imgurl) && file_exists(public_path($product->imgurl))
-                                         ? asset($product->imgurl)
-                                         : asset('img/CV-milk-tea.png') }}"
-                                         alt="ไม่พบรูปภาพในฐานข้อมูล">
+                                    ? asset($product->imgurl)
+                                    : asset('img/CV-milk-tea.png') }}"
+                                    alt="ไม่พบรูปภาพในฐานข้อมูล">
                             </div>
 
                             <div class="name">{{ $product->name }}</div>
@@ -157,7 +157,8 @@
 
             products.forEach(p => {
                 let matchName = p.dataset.name.includes(keyword);
-                let matchType = (type === "all" || p.dataset.type === type);
+                let productTypes = p.dataset.type ? p.dataset.type.split(',') : [];
+                let matchType = (type === "all" || productTypes.includes(type));
                 p.style.display = (matchName && matchType) ? "block" : "none";
             });
         }

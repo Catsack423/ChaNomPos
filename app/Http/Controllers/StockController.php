@@ -23,67 +23,82 @@ class StockController extends Controller
     {
         // ดึงข้อมูลวัตถุดิบพร้อมจำนวนสต็อกมาแสดง
         $ingredients = Ingredient::with('inventory')->get();
-        
+
         // คืนค่าไปที่ไฟล์ resources/views/page/staffstock.blade.php
         return view('page.staffstock', compact('ingredients'));
     }
 
     // ระบบอัปเดตสต็อก (รองรับทั้งปุ่มบวก/ลบ และปุ่มบันทึกรวม)
     public function updateStock(Request $request)
-{
-    $items = $request->ingredients;
+    {
+        $items = $request->ingredients;
 
-    // 1. เพิ่ม Validation พื้นฐานก่อนเริ่ม Transaction
-    $request->validate([
-        'ingredients' => 'required|array',
-        'ingredients.*.ingredient_id' => 'required|exists:inventories,ingredient_id',
-        'ingredients.*.quantity' => 'required|numeric|between:-999999,999999',
-    ], [
-        'ingredients.*.ingredient_id.exists' => 'ไม่พบข้อมูลวัตถุด็บบางรายการในระบบ',
-    ]);
+        $request->validate([
+            'ingredients' => 'required|array',
+            'ingredients.*.ingredient_id' => 'required|exists:inventories,ingredient_id',
+            'ingredients.*.quantity' => 'required|numeric|between:-999999,999999',
+        ]);
 
-    try {
-        DB::transaction(function () use ($items) {
-            foreach ($items as $item) {
-                $qty = (float)($item['quantity'] ?? 0);
-                if ($qty == 0) continue;
+        try {
+            DB::transaction(function () use ($items) {
+                foreach ($items as $item) {
+                    $qty = (float)($item['quantity'] ?? 0);
+                    if ($qty == 0) continue;
 
-                // ใช้ lockForUpdate() เพื่อป้องกัน Race Condition (กรณีทำรายการพร้อมกัน)
-                $inventory = Inventory::where('ingredient_id', $item['ingredient_id'])
-                    ->lockForUpdate()
-                    ->first();
+                    $inventory = Inventory::where('ingredient_id', $item['ingredient_id'])
+                        ->lockForUpdate()
+                        ->first();
 
-                if (!$inventory) {
-                    throw new \Exception("ไม่พบรหัสวัตถุดิบ: " . $item['ingredient_id']);
+                    if (!$inventory) {
+                        throw new \Exception("ไม่พบรหัสวัตถุดิบ: " . $item['ingredient_id']);
+                    }
+
+                    // --- เงื่อนไขที่ 1: เช็คค่าจาก Database ก่อนเริ่มทำงาน ---
+                    $currentInDB = (float)$inventory->quantity;
+
+                    if ($currentInDB < 0) {
+                        $currentInDB = 0; // ถ้าติดลบ ให้มองว่าเป็น 0 ทันที
+                    }
+
+                    // --- เงื่อนไขที่ 2: เช็คการทำงานตาม Request ---
+                    if ($qty < 0) {
+                        // กรณีสั่ง "ลด" (Negative quantity)
+                        if ($currentInDB <= 0) {
+                            // ถ้าใน DB เป็น 0 (หรือติดลบมาก่อน) แล้วสั่งลดอีก ให้ Error
+                            throw new \Exception("วัตถุดิบ {$inventory->name} หมดสต็อกแล้ว ไม่สามารถลดเพิ่มได้");
+                        }
+
+                        // คำนวณการหักออก: ถ้าหัก 10 แต่มีแค่ 4 ให้หักแค่ 4
+                        $actualChange = (abs($qty) > $currentInDB) ? -$currentInDB : $qty;
+                        $newQty = $currentInDB + $actualChange;
+                        $logQty = abs($actualChange); // บันทึกค่าที่หักจริงลง Log
+                    } else {
+                        // กรณีสั่ง "เพิ่ม" (Positive quantity)
+                        $newQty = $currentInDB + $qty;
+                        $logQty = $qty;
+                    }
+
+                    // บันทึกค่ากลับลง Database
+                    $inventory->quantity = $newQty;
+                    $inventory->save();
+
+                    // บันทึก Log
+                    InventoryLog::create([
+                        'ingredient_id' => $item['ingredient_id'],
+                        'user_id' => Auth::id(),
+                        'action' => $qty > 0 ? 'add' : 'reduce',
+                        'quantity' => $logQty,
+                        'reason' => 'ปรับปรุงสต็อก (ระบบจัดการค่าติดลบและตัดสต็อกตามจริง)',
+                        'created_at' => now()
+                    ]);
                 }
+            });
 
-                // ตรวจสอบกรณีลดสต็อกแล้วจะติดลบ (ถ้าคุณไม่ต้องการให้ติดลบ)
-                if ($qty < 0 && ($inventory->quantity + $qty) < 0) {
-                    throw new \Exception("วัตถุดิบ {$inventory->name} มีจำนวนไม่พอสำหรับการตัดสต็อก");
-                }
-
-                $inventory->increment('quantity', $qty);
-
-                InventoryLog::create([
-                    'ingredient_id' => $item['ingredient_id'],
-                    'user_id' => Auth::id(),
-                    'action' => $qty > 0 ? 'add' : 'reduce',
-                    'quantity' => abs($qty),
-                    'reason' => 'ปรับปรุงสต็อกด้วยตนเอง',
-                    'created_at' => now()
-                ]);
-            }
-        });
-
-        return back()->with('success', 'อัปเดตสต็อกเรียบร้อยแล้ว');
-
-    } catch (\Exception $e) {
-        // หากเกิด Error ใน Transaction ระบบจะ Rollback อัตโนมัติ
-        return back()
-            ->withInput() // ให้ค่าที่พิมพ์ค้างไว้ไม่หาย
-            ->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+            return back()->with('success', 'อัปเดตสต็อกเรียบร้อยแล้ว');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+        }
     }
-}
     public function deleteIngredient($id)
     {
         try {

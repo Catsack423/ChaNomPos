@@ -6,6 +6,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\StockController; 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

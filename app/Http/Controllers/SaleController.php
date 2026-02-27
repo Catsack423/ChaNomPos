@@ -41,40 +41,44 @@ class SaleController extends Controller
         return true;
     }
 
-    public function index()
-    {
-        // 1. ตรวจสอบ Inventory และอัปเดตสถานะ Active ของสินค้าทั้งหมด
-        $allProducts = Product::with('recipes.ingredient.inventory')->get();
+   public function index()
+{
+    // 1. ตรวจสอบ Inventory และอัปเดตเฉพาะรายการที่ต้อง "ปิด"
+    $allProducts = Product::with('recipes.ingredient.inventory')->get();
 
-        foreach ($allProducts as $product) {
-            $canMake = $this->hasEnoughStock($product->id, 1);
+    foreach ($allProducts as $product) {
+        $canMake = $this->hasEnoughStock($product->id, 1);
 
-            if ($product->is_active != $canMake) {
-                $product->update(['is_active' => $canMake ? 1 : 0]);
-            }
+        // Logic: ถ้าของไม่พอ ($canMake เป็น false) และปัจจุบันยังเปิดอยู่ (is_active เป็น 1) ให้สั่งปิด
+        // แต่ถ้าของพอ ($canMake เป็น true) จะไม่เข้าไปแก้ไขอะไร (ปล่อยให้ Admin ตัดสินใจเปิดเอง)
+        if (!$canMake && $product->is_active == 1) {
+            $product->update(['is_active' => 0]);
         }
-
-        // 2. ดึงข้อมูลแสดงผล
-        $products = Product::where('is_active', 1)->get();
-        $categories = Category::all();
-        $cart = session()->get('cart', []);
-
-        // 3. กรองสินค้าในตะกร้าที่ข้อมูลไม่สมบูรณ์หรือสต็อกหมด
-        if (!empty($cart)) {
-            $cartChanged = false;
-            foreach ($cart as $id => $item) {
-                if (!$this->hasEnoughStock($id, $item['quantity'])) {
-                    unset($cart[$id]);
-                    $cartChanged = true;
-                }
-            }
-            if ($cartChanged) {
-                session()->put('cart', $cart);
-            }
-        }
-
-        return view('page.dashboard', compact('products', 'cart', 'categories'));
     }
+
+    // 2. ดึงข้อมูลแสดงผล (เฉพาะตัวที่ยัง active อยู่)
+    $products = Product::where('is_active', 1)->get();
+    $categories = Category::all();
+    $cart = session()->get('cart', []);
+
+    // 3. กรองสินค้าในตะกร้า (ถ้าตัวไหนถูกสั่งปิดไปจากขั้นตอนด้านบน หรือ Admin ปิดมือ ให้เอาออกจากตะกร้า)
+    if (!empty($cart)) {
+        $cartChanged = false;
+        foreach ($cart as $id => $item) {
+            // เช็คทั้งสถานะ is_active และความพอของสต็อกสำหรับจำนวนที่สั่ง
+            $product = Product::find($id);
+            if (!$product || !$product->is_active || !$this->hasEnoughStock($id, $item['quantity'])) {
+                unset($cart[$id]);
+                $cartChanged = true;
+            }
+        }
+        if ($cartChanged) {
+            session()->put('cart', $cart);
+        }
+    }
+
+    return view('page.dashboard', compact('products', 'cart', 'categories'));
+}
 
     /**
      * ปรับปรุงให้ส่งค่า Status และ Message กลับไปด้วย

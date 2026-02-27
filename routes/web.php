@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\StockController; 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +16,7 @@ use App\Http\Controllers\AdminOrderController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -104,7 +106,6 @@ Route::middleware([
     // ================= OTHER =================
    
 
- 
 
     Route::get('/admin/stock',function(){
         return view('page.adminstock');
@@ -112,8 +113,23 @@ Route::middleware([
 
     Route::get('/staffstock', fn() => view('page.staffstock'))->name('storeedit');
    
-   
-});
 
+   
+    // --- ส่วนของ Staff Stock ---
+    // เปลี่ยนจาก view() เป็นเรียก method ใน Controller เพื่อดึงข้อมูล Inventory
+    Route::get('/staffstock', [StockController::class, 'staffIndex'])->name('staffstock');
+    // --- ส่วนของ Admin ---
     
 
+    // ส่วนของ Admin Stock (ดึงทั้งสต็อกและ Logs)
+    Route::get('/admin/stock', [StockController::class, 'adminIndex'])->name('adminstock');
+    Route::delete('/admin/stock/delete/{id}', [StockController::class, 'deleteIngredient'])->name('admin.stock.delete');
+
+    // --- ส่วนของ Action (POST) สำหรับจัดการข้อมูล ---
+    // Route สำหรับกดปุ่ม เพิ่ม/ลด สต็อก (ใช้ร่วมกันทั้ง Staff/Admin)
+    Route::post('/stock/update', [StockController::class, 'updateStock'])->name('stock.update');
+    Route::post('/admin/stock/add', [StockController::class, 'storeIngredient'])->name('admin.stock.add');
+    
+    // Route สำหรับ Admin เพิ่มวัตถุดิบใหม่เข้า Table ingredients
+    Route::post('/admin/stock/add', [StockController::class, 'storeIngredient'])->name('admin.stock.add');
+});

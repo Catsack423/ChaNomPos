@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 10, 2); // แนะนำให้กำหนด precision
             $table->boolean('is_active')->default(true);
-            $table->string('description')->nullable(); // เผื่อกรณีไม่มีคำบรรยาย
-            $table->string('imgurl')->nullable();
+            $table->string('description') ;// เผื่อกรณีไม่มีคำบรรยาย
+            $table->string('imgurl');
             $table->timestamps();
             
             // เพิ่มบรรทัดนี้เพื่อรองรับ Soft Deletes

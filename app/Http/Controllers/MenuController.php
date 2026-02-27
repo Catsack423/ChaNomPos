@@ -30,10 +30,37 @@ class MenuController extends Controller
 
     public function toggle(Product $product)
     {
+        // ตรวจสอบเฉพาะกรณีที่กำลังจะเปลี่ยนสถานะจาก "ปิด" เป็น "เปิด" (is_active: false -> true)
+        if (!$product->is_active) {
+
+            // 1. โหลดข้อมูลสูตรและสต็อกมาตรวจสอบ
+            $product->load('recipes.ingredient.inventory');
+
+            // 2. ตรวจสอบว่ามีสูตรอาหารหรือไม่
+            if ($product->recipes->isEmpty()) {
+                return back()->with('error', "ไม่สามารถเปิดได้เนื่องจากสินค้า '{$product->name}' ยังไม่ได้ระบุสูตรอาหาร");
+            }
+
+            // 3. วนลูปเช็ควัตถุดิบทุกตัวในสูตร
+            foreach ($product->recipes as $recipe) {
+                // ตรวจสอบกรณีข้อมูล Ingredient หรือ Inventory ถูกลบออกจากระบบ
+                if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
+                    return back()->with('error', "ไม่สามารถเปิดได้เนื่องจากข้อมูลวัตถุดิบในสูตรของ '{$product->name}' ไม่สมบูรณ์ (อาจถูกลบ)");
+                }
+
+                // ตรวจสอบว่าจำนวนคงเหลือในสต็อกพอสำหรับทำอย่างน้อย 1 หน่วยหรือไม่
+                if ($recipe->ingredient->inventory->quantity < $recipe->amount) {
+                    return back()->with('error', "วัตถุดิบ '{$recipe->ingredient->name}' ไม่เพียงพอ (ต้องการอย่างน้อย {$recipe->amount})");
+                }
+            }
+        }
+
+        // หากผ่านเงื่อนไขทั้งหมด หรือเป็นการสั่ง "ปิด" สินค้า ให้ทำการสลับสถานะตามปกติ
         $product->is_active = !$product->is_active;
         $product->save();
 
-        return back();
+        $message = $product->is_active ? "เปิดการขาย '{$product->name}' เรียบร้อย" : "ปิดการขาย '{$product->name}' เรียบร้อย";
+        return back()->with('success', $message);
     }
 
     // ================= โหมดสร้างสินค้า (Create) =================
@@ -99,12 +126,12 @@ class MenuController extends Controller
 
         // จัดการรูปภาพ (ถ้ามีการอัปโหลดใหม่)
         if ($request->hasFile('image')) {
-            
+
             // ป้องกันการลบรูปที่สินค้าอื่นใช้แชร์อยู่ (Fix รูปพัง)
             if ($product->imgurl && $product->imgurl !== 'img/default.png') {
                 $isImageShared = Product::where('imgurl', $product->imgurl)
-                                        ->where('id', '!=', $product->id)
-                                        ->exists();
+                    ->where('id', '!=', $product->id)
+                    ->exists();
 
                 // ถ้าเช็คแล้ว "ไม่มี" สินค้าอื่นใช้รูปนี้อยู่ ถึงจะอนุญาตให้ลบไฟล์เก่าทิ้ง
                 if (!$isImageShared && File::exists(public_path($product->imgurl))) {
@@ -149,15 +176,15 @@ class MenuController extends Controller
         // ป้องกันลบไฟล์รูปภาพที่มีสินค้าตัวอื่นใช้อยู่ (Fix รูปพัง)
         if ($product->imgurl && $product->imgurl !== 'img/default.png') {
             $isImageShared = Product::where('imgurl', $product->imgurl)
-                                    ->where('id', '!=', $product->id)
-                                    ->exists();
+                ->where('id', '!=', $product->id)
+                ->exists();
 
             // ถ้าเช็คแล้วไม่มีใครใช้ ค่อยลบทิ้ง
             if (!$isImageShared && File::exists(public_path($product->imgurl))) {
                 File::delete(public_path($product->imgurl));
             }
         }
-        
+
         $product->delete();
         return redirect()->back()->with('success', 'ลบเมนูสำเร็จ');
     }

@@ -136,6 +136,7 @@ select {
   place-items: center;
   font-weight: 900;
   font-size: 20px;
+  
 }
 
 .thumb img {
@@ -148,6 +149,7 @@ select {
     /* object-fit: contain; */ /* ถ้ารูปห้ามโดนตัดเลย (แต่อาจเห็นขอบพื้นหลังสีน้ำตาลซ้ายขวาแทน) */
     
     transition: transform 0.3s ease; /* แถม: เผื่ออยากให้รูปขยับเวลา Hover */
+    border-radius: 12px;
 }
 .product .name {
   font-weight: 900

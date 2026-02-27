@@ -184,22 +184,50 @@
                     })
                 })
                 .then(async res => {
-
                     let data = await res.json();
 
+                    // --- กรณีเกิด Error (HTTP 400 หรืออื่นๆ) ---
                     if (!res.ok) {
-                        alert(data.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: data.message || 'ไม่สามารถดำเนินการได้',
+                            confirmButtonColor: '#d33'
+                        });
 
+                        // หากมีข้อมูลตะกร้าส่งกลับมา (เช่น กรณีสินค้าถูกเอาออกเพราะไม่ Active) ให้ Update UI ด้วย
                         if (data.cart) {
                             updateCartUI(data.cart, data.total);
                         }
                         return;
                     }
 
+                    // --- กรณีดำเนินการสำเร็จ (Success) ---
+                    // ใช้ Toast เพื่อความลื่นไหลในการใช้งาน (หายไปเองใน 1.5 วินาที)
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message || 'ดำเนินการสำเร็จ'
+                    });
+
+                    // อัปเดตรายการสินค้าในตะกร้าหน้าจอ
                     updateCartUI(data.cart, data.total);
+
                 })
                 .catch(err => {
-                    alert("Server error");
+                    // กรณี Server ล่ม หรือเชื่อมต่อไม่ได้
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'ไม่สามารถติดต่อกับเซิร์ฟเวอร์ได้ โปรดลองใหม่อีกครั้ง',
+                    });
                 });
         }
 

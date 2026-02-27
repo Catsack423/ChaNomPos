@@ -138,12 +138,7 @@
         </div>
     </main>
 
-    {{-- error --}}
-    @if (session('error'))
-        <script>
-            alert("{{ session('error') }}");
-        </script>
-    @endif
+    
 
     {{-- ================= FILTER SCRIPT ================= --}}
     <script>

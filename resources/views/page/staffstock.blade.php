@@ -1,6 +1,11 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
     <x-tagbar />
+    @if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     <div class="grid productcols">
         <div class="card" >
             

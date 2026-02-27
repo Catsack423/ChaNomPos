@@ -30,35 +30,45 @@ class StockController extends Controller
 
     // ระบบอัปเดตสต็อก (รองรับทั้งปุ่มบวก/ลบ และปุ่มบันทึกรวม)
     public function updateStock(Request $request)
-    {
-        $items = $request->ingredients;
+{
+    $items = $request->ingredients;
 
-        // เพิ่ม Validation ป้องกันเลขมหาศาล
-        $request->validate([
-            'ingredients.*.quantity' => 'required|numeric|between:-999999,999999',
-        ]);
+    // 1. เพิ่ม Validation พื้นฐานก่อนเริ่ม Transaction
+    $request->validate([
+        'ingredients' => 'required|array',
+        'ingredients.*.ingredient_id' => 'required|exists:inventories,ingredient_id',
+        'ingredients.*.quantity' => 'required|numeric|between:-999999,999999',
+    ], [
+        'ingredients.*.ingredient_id.exists' => 'ไม่พบข้อมูลวัตถุด็บบางรายการในระบบ',
+    ]);
 
+    try {
         DB::transaction(function () use ($items) {
             foreach ($items as $item) {
                 $qty = (float)($item['quantity'] ?? 0);
-                
-                // ถ้าเป็น 0 ไม่ต้องทำอะไร
                 if ($qty == 0) continue;
 
-                $inventory = Inventory::where('ingredient_id', $item['ingredient_id'])->first();
-                if (!$inventory) continue;
+                // ใช้ lockForUpdate() เพื่อป้องกัน Race Condition (กรณีทำรายการพร้อมกัน)
+                $inventory = Inventory::where('ingredient_id', $item['ingredient_id'])
+                    ->lockForUpdate()
+                    ->first();
 
-                // ใช้ increment เสมอ: 
-                // ถ้า $qty เป็น 5 จะบวก 5
-                // ถ้า $qty เป็น -5 จะบวกด้วย -5 (ซึ่งก็คือการลบนั่นเอง)
+                if (!$inventory) {
+                    throw new \Exception("ไม่พบรหัสวัตถุดิบ: " . $item['ingredient_id']);
+                }
+
+                // ตรวจสอบกรณีลดสต็อกแล้วจะติดลบ (ถ้าคุณไม่ต้องการให้ติดลบ)
+                if ($qty < 0 && ($inventory->quantity + $qty) < 0) {
+                    throw new \Exception("วัตถุดิบ {$inventory->name} มีจำนวนไม่พอสำหรับการตัดสต็อก");
+                }
+
                 $inventory->increment('quantity', $qty);
 
-                // บันทึก Log
                 InventoryLog::create([
                     'ingredient_id' => $item['ingredient_id'],
                     'user_id' => Auth::id(),
-                    'action' => $qty > 0 ? 'add' : 'reduce', // แยกประเภทใน Log ตามเครื่องหมาย
-                    'quantity' => abs($qty), // ใน Log ให้เก็บเป็นค่าบวกเสมอ (เพื่อให้อ่านง่าย)
+                    'action' => $qty > 0 ? 'add' : 'reduce',
+                    'quantity' => abs($qty),
                     'reason' => 'ปรับปรุงสต็อกด้วยตนเอง',
                     'created_at' => now()
                 ]);
@@ -66,7 +76,14 @@ class StockController extends Controller
         });
 
         return back()->with('success', 'อัปเดตสต็อกเรียบร้อยแล้ว');
+
+    } catch (\Exception $e) {
+        // หากเกิด Error ใน Transaction ระบบจะ Rollback อัตโนมัติ
+        return back()
+            ->withInput() // ให้ค่าที่พิมพ์ค้างไว้ไม่หาย
+            ->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
     }
+}
     public function deleteIngredient($id)
     {
         try {

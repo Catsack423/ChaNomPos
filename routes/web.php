@@ -111,9 +111,7 @@ Route::middleware([
         return view('page.adminstock');
     })->name('adminstock');
 
-    Route::get('/staffstock', fn() => view('page.staffstock'))->name('storeedit');
    
-
    
     // --- ส่วนของ Staff Stock ---
     // เปลี่ยนจาก view() เป็นเรียก method ใน Controller เพื่อดึงข้อมูล Inventory

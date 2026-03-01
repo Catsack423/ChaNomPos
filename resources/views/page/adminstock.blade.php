@@ -7,7 +7,7 @@
 
         <div class="card"
             style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="margin-bottom: 20px;">รายชื่อวัตถุดิบ</h2>
+            <h2 style="margin-bottom: 20px; font-weight: bold">รายชื่อวัตถุดิบ</h2>
 
             <form action="{{ route('stock.update') }}" method="POST" id="mainStockForm">
                 @csrf
@@ -48,7 +48,7 @@
                                             style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                             <input type="number" name="ingredients[{{ $index }}][quantity]"
                                                 id="qty_{{ $index }}" class="qty-field" value="0"
-                                                style="width: 60px; text-align: center; border-radius: 8px; border: 1px solid #ddd;">
+                                                style="width: 100px; text-align: center; border-radius: 8px; border: 1px solid #ddd;">
 
                                             <button type="button" onclick="adjustInput('{{ $index }}', 1)"
                                                 style="background: #4CAF50; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">▲</button>
@@ -82,7 +82,7 @@
 
         <div class="card"
             style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: fit-content;">
-            <h3 style="margin-bottom: 20px;">เพิ่มวัตถุดิบ </h3>
+            <h3 style="margin-bottom: 20px; font-weight: bold">เพิ่มวัตถุดิบ </h3>
             <form action="{{ route('admin.stock.add') }}" method="POST">
                 @csrf
                 <div style="margin-bottom: 15px;">
@@ -109,7 +109,7 @@
     <div style="padding: 0 20px 20px 20px;">
         <div class="card"
             style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 70%; margin: 0 auto;">
-            <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #8b5e3c;">บันทึกการเปลี่ยนแปลง (Log)</h2>
+            <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #000000; font-weight: bold" >บันทึกการเปลี่ยนแปลง</h2>
 
             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                 <table class="bubble-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">

@@ -16,12 +16,7 @@
   box-sizing: border-box
 }
 
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui;
-  background: linear-gradient(180deg, var(--bg), #fff);
-  color: var(--text);
-}
+
 
 
 

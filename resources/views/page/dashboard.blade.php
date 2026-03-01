@@ -10,7 +10,7 @@
             <div class="card">
 
                 <div class="row">
-                    <h2>เมนูชานม</h2>
+                    <h2 style="font-weight: bold;">เมนูชานม</h2>
                     <div class="spacer"></div>
                     <span class="badge open">
                         <span class="dot"></span>

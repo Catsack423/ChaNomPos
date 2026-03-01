@@ -1,5 +1,6 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/adminstock.css') }}">
     <x-tagbar />
     @if(session('error'))
     <div class="alert alert-danger">
@@ -10,16 +11,16 @@
         <div class="card" >
             
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
-                <span style="font-size: 24px;">📦</span>
-                <h2 style=" margin: 0;">จัดการสต็อกวัตถุดิบ</h2>
+                <span style="font-size: 24px;"></span>
+                <h2 style=" margin: 0; font-weight: bold">จัดการสต็อกวัตถุดิบ</h2>
             </div>
 
             <form action="{{ route('stock.update') }}" method="POST">
                 @csrf
-                <table style="width: 100%; border-collapse: collapse;">
+                <table class="bubble-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="text-align: left; color: #bca08d; border-bottom: 1px solid #f5f5f5;">
-                            <th style="padding: 15px;">ลำดับ</th>
+                            <th style="padding: 15px ;">ลำดับ</th>
                             <th>ชื่อวัตถุดิบ</th>
                             <th class="text-center">คงเหลือ</th>
                             <th class="text-center">ปรับปรุงจำนวน</th>
@@ -29,7 +30,7 @@
                         @foreach($ingredients as $index => $item)
                         <tr style="border-bottom: 1px solid #fafafa;">
                             <td style="padding: 20px 15px;">
-                                <span style="background: #f2e1d1; color: #8b5e3c; padding: 5px 12px; border-radius: 12px; font-size: 0.9em;">
+                                <span style="background: #e6d5c3; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; color: #7b4a2e; font-weight: bold;">
                                     {{ sprintf('%02d', $index + 1) }}
                                 </span>
                             </td>
@@ -39,16 +40,16 @@
                                 <input type="hidden" name="ingredients[{{$index}}][ingredient_id]" value="{{ $item->id }}">
                             </td>
                             <td class="text-center">
-                                <span style="background: #f5f5f5; padding: 8px 18px; border-radius: 15px; font-weight: bold; color: {{ ($item->inventory->quantity ?? 0) <= 0 ? 'red' : '#555' }}">
+                                <span style="background: #f5f5f5; padding: 8px 18px; border-radius: 15px; font-weight: bold; color: #7b4a2e; {{ ($item->inventory->quantity ?? 0) <= 0 ? 'red' : '#555' }}">
                                     {{ number_format(max($item->inventory->quantity ?? 0, 0), 0) }}
                                 </span>
-                                <strong style="margin-left: 10px; color: #333;">{{ $item->unit }}</strong>
+                                {{-- <strong style="margin-left: 10px; color: #333;">{{ $item->unit }}</strong> --}}
                             </td>
                             <td class="text-center">
                                 <div class="stock-action-group" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                     <input type="number" name="ingredients[{{$index}}][quantity]" 
                                         id="qty_{{ $index }}" class="qty-field" value="0"
-                                        style="width: 60px; text-align: center; border-radius: 8px; border: 1px solid #ddd;">
+                                        style="width: 100px; text-align: center; border-radius: 8px; border: 1px solid #ddd;">
                                     
                                     <button type="button" onclick="adjustInput('{{$index}}', 1)" 
                                         style="background: #4CAF50; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">▲</button>

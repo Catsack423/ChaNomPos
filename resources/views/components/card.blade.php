@@ -5,7 +5,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 16px;
+            padding: 20px;
 
         }
 

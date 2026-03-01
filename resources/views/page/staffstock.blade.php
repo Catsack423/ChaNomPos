@@ -1,6 +1,6 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/adminstock.css') }}">
+    
     <x-tagbar />
     @if(session('error'))
     <div class="alert alert-danger">
@@ -19,7 +19,7 @@
                 @csrf
                 <table class="bubble-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="text-align: left; color: #bca08d; border-bottom: 1px solid #f5f5f5;">
+                        <tr style="color: #bca08d; border-bottom: 1px solid #f5f5f5;">
                             <th style="padding: 15px ;">ลำดับ</th>
                             <th>ชื่อวัตถุดิบ</th>
                             <th class="text-center">คงเหลือ</th>

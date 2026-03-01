@@ -12,10 +12,10 @@
                 <div class="row">
                     <h2 style="font-weight: bold;">เมนูชานม</h2>
                     <div class="spacer"></div>
-                    <span class="badge open">
+                    {{-- <span class="badge open">
                         <span class="dot"></span>
                         ร้านเปิด
-                    </span>
+                    </span> --}}
                 </div>
 
                 {{-- Search --}}

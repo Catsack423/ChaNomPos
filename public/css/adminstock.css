@@ -423,5 +423,5 @@ select:focus {
 }
 
 .text-center {
-    text-align: center;
+    text-align: center !important;
 }

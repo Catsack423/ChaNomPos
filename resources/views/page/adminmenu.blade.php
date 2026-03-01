@@ -40,12 +40,12 @@
                  }
              </style>
 
-
-             <div class="menu-wrapper">
-                 <div class="menu-header">
-                     <h4>เมนู</h4>
+             <div class="menu-header" style="">
+                     <h2>รายชื่อสินค้า</h2>
                      <button onclick="openMenuModal('create')" class="btn-add-menu">+ เพิ่มเมนู</button>
                  </div>
+             <div class="menu-wrapper">
+                 
 
                  {{-- Grid เมนู --}}
                  <div class="menu-grid-small">

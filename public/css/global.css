@@ -13,12 +13,67 @@
     --radius: 14px;
 }
 
-body {
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", Arial, sans-serif;
-    color: var(--text);
-    background: linear-gradient(180deg, var(--bg), #fff);
+html {
+    /* จองพื้นที่สำหรับ scrollbar ไว้เสมอเพื่อป้องกันหน้าเว็บขยับ (Layout Shift) */
+    scrollbar-gutter: stable;
+    /* บังคับให้พื้นหลังครอบคลุมพื้นที่ทั้งหมด */
+    
+}
+/* ตกแต่งแถบเลื่อนสำหรับ Chrome, Safari, และ Edge */
+html::-webkit-scrollbar {
+    width: 8px; /* ปรับให้แคบลงหน่อยจะได้ไม่เกะกะ */
+}
 
+html::-webkit-scrollbar-track {
+    background: #fdf6ed; /* สีพื้นหลังแถบเลื่อน (โทนเดียวกับเว็บคุณ) */
+}
+
+html::-webkit-scrollbar-thumb {
+    background: #7b4a2e; /* สีตัวเลื่อน (สีน้ำตาลหลักของคุณ) */
+    border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: #5d3822; /* สีตอนเอาเมาส์ไปชี้ให้เข้มขึ้นนิดนึง */
+    
+}
+
+/* ประกาศฟอนต์ Prompt แต่ละความหนา */
+
+@font-face {
+    font-family: 'Prompt';
+    src: url('../fonts/Prompt-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap; /* ยังต้องใส่ไว้เพื่อความนิ่ง */
+}
+
+@font-face {
+    font-family: 'Prompt';
+    src: url('../fonts/Prompt-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Prompt';
+    src: url('../fonts/Prompt-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* นำมาใช้งานกับทั้งเว็บ */
+
+body {
+    
+    font-family: 'Prompt',ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", Arial, sans-serif;
+    color: var(--text);
+    font-weight: 400;
+    background: linear-gradient(180deg, var(--bg), #fff);
+    background-color: transparent;
+    margin: 0;
     background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
@@ -50,41 +105,9 @@ a {
     font-size: 20px
 }
 
-@media(max-width:391px) {
-    .card h2 {
-        
-        font-size: 16px
-    }
 
-    .body{
-        font-size: 12px;
-    }
-}
-:root {
-    --primary: #7B4A2E;
-    --secondary: #F5D7B2;
-    --accent: #C97C5D;
-    --success: #4CAF50;
-    --danger: #F44336;
-    --text: #2E2E2E;
-    --muted: #6B7280;
-    --border: #E5E7EB;
-    --card: #ffffff;
-    --bg: #FFF9F2;
-    --shadow: 0 10px 30px rgba(0, 0, 0, .08);
-    --radius: 14px;
-}
 
-body {
-    margin: 0;
-    font-family: "Prompt", sans-serif;   /* ✅ เปลี่ยนตรงนี้ */
-    font-weight: 400;
-    color: var(--text);
-    background: linear-gradient(180deg, var(--bg), #fff);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
-}
+
 
 a {
     color: inherit;
@@ -117,6 +140,6 @@ a {
     }
 
     body {          /* ❗ แก้จาก .body เป็น body */
-        font-size: 14px;
+        font-size: 12px;
     }
 }

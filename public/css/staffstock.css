@@ -22,7 +22,9 @@
         grid-template-columns: 1fr
     }
 }
-
+.th {
+    text-align: center;
+}
 .card {
     
     background: var(--card);
@@ -340,5 +342,5 @@ select:focus {
 }
 
 .text-center {
-    text-align: center;
+    text-align: center !important;
 }

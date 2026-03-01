@@ -9,9 +9,9 @@
 
 
         @if (Route::is('adminmenu'))
-            <a href="{{ route('adminmenu') }}" class='btn1 disable'>จัดการเมนู</a>
+            <a href="{{ route('adminmenu') }}" class='btn1 disable'>จัดการสินค้า</a>
         @else
-            <a href="{{ route('adminmenu') }}" class='btn1  act'>จัดการเมนู</a>
+            <a href="{{ route('adminmenu') }}" class='btn1  act'>จัดการสินค้า</a>
         @endif
 
         @if (Route::is('adminstock'))

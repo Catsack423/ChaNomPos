@@ -2,19 +2,24 @@
 <html lang="th">
 
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="{{ asset('fonts/Prompt-Regular.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Bold.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Italic.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Light.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Thin.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-SemiBold.ttf') }}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Medium.ttf') }}" as="font" type="font/ttf" crossorigin>
+
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PosChaNom</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body>

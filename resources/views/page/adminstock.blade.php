@@ -14,7 +14,7 @@
                 <div class="table-responsive">
                     <table class="bubble-table" style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
                         <thead>
-                            <tr style="text-align: left; color: #8b5e3c;">
+                            <tr style="color: #8b5e3c;">
                                 <th>ลำดับ</th>
                                 <th>ชื่อวัตถุดิบ</th>
                                 <th class="text-center">คงเหลือ</th>

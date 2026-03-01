@@ -22,11 +22,9 @@ class SaleController extends Controller
         $product = Product::with('recipes.ingredient.inventory')->find($productId);
         if (!$product) return false;
 
-        // ถ้าสินค้าไม่มีสูตรอาหาร ให้ถือว่าขายไม่ได้
         if ($product->recipes->isEmpty()) return false;
 
         foreach ($product->recipes as $recipe) {
-            // ตรวจสอบความสมบูรณ์ของข้อมูลวัตถุดิบและคลังสินค้า
             if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
                 return false; 
             }
@@ -42,33 +40,34 @@ class SaleController extends Controller
     }
 
     /**
-     * หน้าแรก Dashboard พร้อมระบบ Auto-Disable สินค้าที่ของหมด
+     * หน้าแรก Dashboard
      */
     public function index()
     {
-        // 1. ตรวจสอบ Inventory และอัปเดตสถานะ Active เฉพาะตัวที่ของหมด
+        // 1. ตรวจสอบ Inventory และอัปเดตสถานะ is_active ตามสต็อก (is_show ไม่เกี่ยวกับการคำนวณสต็อก)
         $allProducts = Product::with('recipes.ingredient.inventory')->get();
 
         foreach ($allProducts as $product) {
             $canMake = $this->hasEnoughStock($product->id, 1);
 
-            // เงื่อนไข: ถ้าของไม่พอและยังเปิดอยู่ให้ปิด แต่ถ้าของพอจะไม่สั่งเปิดเอง (ให้ Admin เปิดมือ)
-            if (!$canMake && $product->is_active == 1) {
-                $product->update(['is_active' => 0]);
+            if ($product->is_active != $canMake) {
+                $product->update(['is_active' => $canMake ? 1 : 0]);
             }
         }
 
-        // 2. ดึงข้อมูลสินค้าที่ Active อยู่มาแสดงผล
-        $products = Product::where('is_active', 1)->get();
+        // 2. ดึงข้อมูลสินค้าที่ต้องทั้ง Active (สต็อกพอ) และ Show (Admin สั่งแสดง)
+        $products = Product::where('is_active', 1)->where('is_show', 1)->get();
         $categories = Category::all();
         $cart = session()->get('cart', []);
 
-        // 3. กรองสินค้าในตะกร้าที่อาจจะถูกปิดไปแล้วหรือสต็อกไม่พอ
+        // 3. กรองสินค้าในตะกร้า (ถ้าสินค้าถูกปิด is_active หรือถูกซ่อน is_show ให้เอาออก)
         if (!empty($cart)) {
             $cartChanged = false;
             foreach ($cart as $id => $item) {
                 $productInCart = Product::find($id);
-                if (!$productInCart || !$productInCart->is_active || !$this->hasEnoughStock($id, $item['quantity'])) {
+                
+                // ตรวจสอบ: ต้องมีสินค้า + ต้อง Active + ต้อง Show + สต็อกต้องพอตามจำนวน
+                if (!$productInCart || !$productInCart->is_active || !$productInCart->is_show || !$this->hasEnoughStock($id, $item['quantity'])) {
                     unset($cart[$id]);
                     $cartChanged = true;
                 }
@@ -81,9 +80,6 @@ class SaleController extends Controller
         return view('page.dashboard', compact('products', 'cart', 'categories'));
     }
 
-    /**
-     * ปรับปรุง JSON Response ให้ส่งสถานะและข้อความกลับ
-     */
     private function responseCart($cart, $message = null)
     {
         return response()->json([
@@ -95,14 +91,14 @@ class SaleController extends Controller
     }
 
     /**
-     * เพิ่มสินค้าลงตะกร้า (เช็ค Active และ Stock)
+     * เพิ่มสินค้าลงตะกร้า (ตรวจสอบทั้ง Active และ Show)
      */
     public function addToCart(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
         
-        // ตรวจสอบว่าสินค้ายังเปิดขายอยู่หรือไม่
+        // ตรวจสอบผ่านฟังก์ชันตัวช่วย (check_active_product_in_cart ตรวจทั้ง active และ show)
         if ($res = $this->check_active_product_in_cart($product, $cart)) {
             return $res;
         }
@@ -129,14 +125,13 @@ class SaleController extends Controller
     }
 
     /**
-     * เพิ่มจำนวนสินค้าในตะกร้า (เช็ค Active และ Stock)
+     * เพิ่มจำนวน (ตรวจสอบทั้ง Active และ Show)
      */
     public function increase(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
         
-        // ตรวจสอบว่าสินค้ายยัง Active หรือไม่ก่อนเพิ่มจำนวน
         if ($res = $this->check_active_product_in_cart($product, $cart)) {
             return $res;
         }
@@ -152,9 +147,6 @@ class SaleController extends Controller
         return $this->responseCart($cart, "เพิ่มจำนวน '{$product->name}' เรียบร้อย");
     }
 
-    /**
-     * ลดจำนวนสินค้าในตะกร้า
-     */
     public function decrease(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
@@ -171,9 +163,6 @@ class SaleController extends Controller
         return $this->responseCart($cart, "ลดจำนวนสินค้าเรียบร้อย");
     }
 
-    /**
-     * นำสินค้าออกจากตะกร้า
-     */
     public function remove(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -188,7 +177,7 @@ class SaleController extends Controller
     }
 
     /**
-     * ขั้นตอนชำระเงิน ตรวจสอบสถานะ Active และตัดสต็อกพร้อมบันทึก Log
+     * ชำระเงิน ตรวจสอบด่านสุดท้าย (ต้อง Active และ Show)
      */
     public function checkout()
     {
@@ -196,14 +185,13 @@ class SaleController extends Controller
         if (!$cart) return back()->with('error', 'ไม่มีสินค้าในตะกร้า');
 
         return DB::transaction(function () use ($cart) {
-            // ตรวจสอบสถานะสินค้าและสต็อกด่านสุดท้าย
             foreach ($cart as $id => $item) {
                 $product = Product::find($id);
-                if (!$product || !$product->is_active || !$this->hasEnoughStock($id, $item['quantity'])) {
-                    // หากไม่ผ่าน ให้เตะสินค้านั้นออกจากตะกร้าทันที
+                // ตรวจสอบ: สินค้าต้องมี + ต้อง Active + ต้อง Show + สต็อกต้องพอ
+                if (!$product || !$product->is_active || !$product->is_show || !$this->hasEnoughStock($id, $item['quantity'])) {
                     unset($cart[$id]);
                     session()->put('cart', $cart);
-                    return back()->with('error', "สินค้า " . ($product->name ?? 'บางรายการ') . " ไม่พร้อมจำหน่ายหรือสต็อกไม่พอ");
+                    return back()->with('error', "สินค้า " . ($product->name ?? 'บางรายการ') . " ไม่พร้อมจำหน่ายหรือถูกซ่อนโดยผู้ดูแล");
                 }
             }
 
@@ -222,7 +210,6 @@ class SaleController extends Controller
                     'price' => $item['price']
                 ]);
 
-                // ตัดสต็อกวัตถุดิบตามสูตร
                 $productRecord = Product::with('recipes.ingredient')->find($id);
                 foreach ($productRecord->recipes as $recipe) {
                     if (!$recipe->ingredient) continue;
@@ -233,7 +220,6 @@ class SaleController extends Controller
                     if ($inventory) {
                         $inventory->decrement('quantity', $totalDeduction);
 
-                        // บันทึก Log การตัดสต็อก (Action: reduce)
                         InventoryLog::create([
                             'ingredient_id' => $recipe->ingredient_id,
                             'user_id' => Auth::id(),
@@ -252,19 +238,22 @@ class SaleController extends Controller
     }
 
     /**
-     * ฟังก์ชันช่วยตรวจสอบสถานะ Active และจัดการตะกร้า
+     * ฟังก์ชันช่วยตรวจสอบทั้ง is_active และ is_show
      */
     public function check_active_product_in_cart($product, $cart)
     {
-        if (!$product->is_active) {
+        // ถ้าสินค้าไม่ Active (สต็อกหมด) หรือ ไม่ Show (Admin ปิดการแสดงผล)
+        if (!$product->is_active || !$product->is_show) {
             if (isset($cart[$product->id])) {
                 unset($cart[$product->id]);
                 session()->put('cart', $cart);
             }
             
+            $reason = !$product->is_show ? "ถูกซ่อนโดยผู้ดูแล" : "วัตถุดิบไม่พอ";
+            
             return response()->json([
                 'status' => 'error',
-                'message' => "สินค้า '{$product->name}' ถูกปิดการใช้งานหรือวัตถุดิบไม่พอ",
+                'message' => "สินค้า '{$product->name}' ไม่พร้อมจำหน่ายเนื่องจาก{$reason}",
                 'cart' => $cart,
                 'total' => collect($cart)->sum(fn($i) => $i['price'] * $i['quantity'])
             ], 400);

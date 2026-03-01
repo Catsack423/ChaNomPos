@@ -30,7 +30,7 @@ html::-webkit-scrollbar-track {
 
 html::-webkit-scrollbar-thumb {
     background: #7b4a2e; /* สีตัวเลื่อน (สีน้ำตาลหลักของคุณ) */
-    border-radius: 10px;
+    
 }
 
 html::-webkit-scrollbar-thumb:hover {

@@ -398,3 +398,21 @@ input:checked + .slider:before {
     border: 1px solid; /* ใช้เส้นขอบเท่ากัน */
     transition: 0.2s;
 }
+
+.badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: auto;
+     
+      border:1px solid var(--border);
+      background:#fff;
+       color: #444;
+      font-weight:700;
+      font-size:13px;
+    }
+    .dot{width:10px; height:10px; border-radius:999px; background:#999}
+    .badge.open .dot{background:var(--success)}
+    .badge.closed .dot{background:var(--danger)}
+    .badge.pending .dot{background:#F59E0B}
+    .badge.making .dot{background:#3B82F6}
+    .badge.completed .dot{background:var(--success)}
+    .badge.cancelled .dot{background:var(--danger)}

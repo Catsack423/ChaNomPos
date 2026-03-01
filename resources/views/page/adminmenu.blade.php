@@ -8,7 +8,7 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 
  <x-app-layout>
- 
+
      <x-tagbaradmin />
 
      <x-grid style="">
@@ -41,11 +41,11 @@
              </style>
 
              <div class="menu-header" style="">
-                     <h2>รายชื่อสินค้า</h2>
-                     <button onclick="openMenuModal('create')" class="btn-add-menu">+ เพิ่มเมนู</button>
-                 </div>
+                 <h2>รายชื่อสินค้า</h2>
+                 <button onclick="openMenuModal('create')" class="btn-add-menu">＋ เพิ่มเมนู</button>
+             </div>
              <div class="menu-wrapper">
-                 
+
 
                  {{-- Grid เมนู --}}
                  <div class="menu-grid-small">
@@ -69,19 +69,30 @@
                              <div class="menu-text">
                                  <div>ชื่อ: {{ $product->name }}</div>
                                  <div>ราคา {{ $product->price }} บาท</div>
+                                 <div>
+                                     @if ($product->is_active)
+                                         <span class="badge open">
+                                             <span class="dot"></span>
+                                             มีสินค้า
+                                         </span>
+                                     @else
+                                         <span class="badge closed">
+                                             <span class="dot"></span>
+                                             วัตถุดิบไม่พอ
+                                         </span>
+                                     @endif
+
+                                 </div>
                              </div>
 
                              {{-- ปุ่มล่าง --}}
                              <div class="menu-footer">
-                                 <form action="{{ route('adminmenu.toggle', $product->id) }}" method="POST">
-                                     @csrf
-                                     @method('PATCH')
-                                     <label class="switch">
-                                         <input type="checkbox" onchange="this.form.submit()"
-                                             {{ $product->is_active ? 'checked' : '' }}>
-                                         <span class="slider round"></span>
-                                     </label>
-                                 </form>
+                                 <label class="switch">
+                                     <input type="checkbox"
+                                         onchange="toggleShow('{{ route('adminmenu.toggle', $product->id) }}', {{ $product->id }}, this)"
+                                         {{ $product->is_show ? 'checked' : '' }}>
+                                     <span class="slider round"></span>
+                                 </label>
 
                                  {{-- กลุ่มปลุ่มล่างขวาของเมนู --}}
                                  <div class="bottom-right-group">
@@ -363,6 +374,60 @@
                              document.querySelector(`[data-id='${id}']`).remove();
                          }
                      });
+                 }
+
+                 const csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+                 function toggleShow(url, id, checkbox) {
+                     // 1. ดึง Token แบบปลอดภัย (เช็คก่อนว่ามีไหม)
+                     const csrfElement = document.querySelector('meta[name="csrf-token"]');
+
+                     if (!csrfElement) {
+                         console.error("Error: ไม่พบ <meta name='csrf-token'> ในส่วน <head> ของ HTML");
+                         Swal.fire('ผิดพลาด', 'ไม่พบ CSRF Token ในระบบ', 'error');
+                         checkbox.checked = !checkbox.checked; // คืนค่าปุ่ม
+                         return;
+                     }
+
+                     const csrfToken = csrfElement.content;
+                     const originalStatus = !checkbox.checked;
+
+                     console.log("กำลังส่งคำขอไปที่:", url); // สำหรับ Debug
+
+                     fetch(url, {
+                             method: "PATCH",
+                             headers: {
+                                 "Content-Type": "application/json",
+                                 "X-CSRF-TOKEN": csrfToken,
+                                 "Accept": "application/json"
+                             },
+                             body: JSON.stringify({
+                                 product_id: id
+                             })
+                         })
+                         .then(async res => {
+                             const data = await res.json();
+                             console.log("Response จากเซิร์ฟเวอร์:", data);
+
+                             if (!res.ok) throw new Error(data.message || 'Server returned error');
+
+                             // แสดง Toast เมื่อสำเร็จ
+                             Swal.mixin({
+                                 toast: true,
+                                 position: 'top-end',
+                                 showConfirmButton: false,
+                                 timer: 1500,
+                                 timerProgressBar: true
+                             }).fire({
+                                 icon: 'success',
+                                 title: data.message
+                             });
+                         })
+                         .catch(err => {
+                             console.error("เกิดข้อผิดพลาดในการ Fetch:", err);
+                             checkbox.checked = originalStatus; // คืนค่าปุ่ม
+                             Swal.fire('ผิดพลาด', err.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้', 'error');
+                         });
                  }
              </script>
          </x-card>

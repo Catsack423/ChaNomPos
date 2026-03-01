@@ -53,7 +53,7 @@
                                     {{ number_format($product->price) }} ฿
                                 </div>
                                 <div class="spacer"></div>
-
+                                
                                 <button class="btn primary add-to-cart" data-id="{{ $product->id }}">
                                     เพิ่ม
                                 </button>

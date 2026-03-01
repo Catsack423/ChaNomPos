@@ -15,7 +15,8 @@ class Product extends Model
         'is_active',
         'description',
         'imgurl',
-        'category_id'
+        'category_id',
+        'is_show'
     ];
 
     public function recipes()

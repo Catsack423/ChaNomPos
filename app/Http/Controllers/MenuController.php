@@ -13,56 +13,77 @@ class MenuController extends Controller
 {
     public function adminMenu()
     {
+        // 1. ดึงข้อมูลสินค้าพร้อมสูตรและสต็อกเพื่อตรวจสอบสถานะก่อน
+        $allProducts = Product::with('recipes.ingredient.inventory')->get();
+
+        foreach ($allProducts as $product) {
+            $canMake = true;
+
+            // ตรวจสอบสต็อกเบื้องต้น (ทำได้ 1 ชิ้นหรือไม่)
+            if ($product->recipes->isEmpty()) {
+                $canMake = false;
+            } else {
+                foreach ($product->recipes as $recipe) {
+                    if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
+                        $canMake = false;
+                        break;
+                    }
+
+                    if ($recipe->ingredient->inventory->quantity < $recipe->amount) {
+                        $canMake = false;
+                        break;
+                    }
+                }
+            }
+
+            // อัปเดต is_active ให้ตรงตามความจริง (เปิดเองถ้าของพอ / ปิดถ้าของหมด)
+            if ($product->is_active != $canMake) {
+                $product->update(['is_active' => $canMake ? 1 : 0]);
+            }
+        }
+
+        // 2. ดึงข้อมูลทั้งหมดที่อัปเดตแล้วเพื่อส่งไปที่ View
         $products = Product::with(['recipes.ingredient', 'categories'])->get();
         $ingredients = Ingredient::with('recipe')->get();
         $categories = Category::all();
+
         return view('page.adminmenu', compact('products', 'ingredients', 'categories'));
     }
 
     public function activate($id)
     {
+        // หาข้อมูลสินค้า
         $product = Product::findOrFail($id);
-        $product->is_active = 1;
+
+        // ตั้งค่าให้แสดงผล (is_show = 1)
+        $product->is_show = 1;
         $product->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('success', "เปิดการแสดงผล '{$product->name}' สำเร็จ");
     }
 
     public function toggle(Product $product)
     {
-        // ตรวจสอบเฉพาะกรณีที่กำลังจะเปลี่ยนสถานะจาก "ปิด" เป็น "เปิด" (is_active: false -> true)
-        if (!$product->is_active) {
+        try {
+            // สลับค่า is_show
+            $product->is_show = !$product->is_show;
+            $product->save();
 
-            // 1. โหลดข้อมูลสูตรและสต็อกมาตรวจสอบ
-            $product->load('recipes.ingredient.inventory');
+            $statusText = $product->is_show ? 'แสดง' : 'ซ่อน';
 
-            // 2. ตรวจสอบว่ามีสูตรอาหารหรือไม่
-            if ($product->recipes->isEmpty()) {
-                return back()->with('error', "ไม่สามารถเปิดได้เนื่องจากสินค้า '{$product->name}' ยังไม่ได้ระบุสูตรอาหาร");
-            }
-
-            // 3. วนลูปเช็ควัตถุดิบทุกตัวในสูตร
-            foreach ($product->recipes as $recipe) {
-                // ตรวจสอบกรณีข้อมูล Ingredient หรือ Inventory ถูกลบออกจากระบบ
-                if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
-                    return back()->with('error', "ไม่สามารถเปิดได้เนื่องจากข้อมูลวัตถุดิบในสูตรของ '{$product->name}' ไม่สมบูรณ์ (อาจถูกลบ)");
-                }
-
-                // ตรวจสอบว่าจำนวนคงเหลือในสต็อกพอสำหรับทำอย่างน้อย 1 หน่วยหรือไม่
-                if ($recipe->ingredient->inventory->quantity < $recipe->amount) {
-                    return back()->with('error', "วัตถุดิบ '{$recipe->ingredient->name}' ไม่เพียงพอ (ต้องการอย่างน้อย {$recipe->amount})");
-                }
-            }
+            return response()->json([
+                'status' => 'success',
+                'message' => "ทำการ {$statusText} เมนู '{$product->name}' เรียบร้อยแล้ว",
+                'is_show' => $product->is_show
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
+            ], 500);
         }
-
-        // หากผ่านเงื่อนไขทั้งหมด หรือเป็นการสั่ง "ปิด" สินค้า ให้ทำการสลับสถานะตามปกติ
-        $product->is_active = !$product->is_active;
-        $product->save();
-
-        $message = $product->is_active ? "เปิดการขาย '{$product->name}' เรียบร้อย" : "ปิดการขาย '{$product->name}' เรียบร้อย";
-        return back()->with('success', $message);
     }
-
+    
     // ================= โหมดสร้างสินค้า (Create) =================
     public function store(Request $request)
     {

@@ -53,7 +53,7 @@
                                     {{ number_format($product->price) }} ฿
                                 </div>
                                 <div class="spacer"></div>
-                                
+
                                 <button class="btn primary add-to-cart" data-id="{{ $product->id }}">
                                     เพิ่ม
                                 </button>
@@ -203,7 +203,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 1500,
+                        timer: 1100,
                         timerProgressBar: true
                     });
 

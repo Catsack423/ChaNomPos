@@ -102,14 +102,19 @@
                                          onclick="openMenuModal('edit', this)">
                                          แก้ไขเมนู
                                      </button>
-                                     <form action="{{ route('adminmenu.destroy', $product->id) }}" method="POST"
-                                         onsubmit="return confirm('ยืนยันการลบเมนูนี้?')"
-                                         class="d-flex justify-content-end">
+                                     {{-- ฟอร์มลบ: ใส่ id เพื่อให้อ้างอิงได้ง่าย --}}
+                                     <form id="delete-form-{{ $product->id }}"
+                                         action="{{ route('adminmenu.destroy', $product->id) }}" method="POST"
+                                         class="d-none">
                                          @csrf
                                          @method('DELETE')
-                                         <button type="submit" class="btn-delete" title="ลบ"
-                                             style="">ลบ</button>
                                      </form>
+
+                                     {{-- ปุ่มลบ: เรียกฟังก์ชัน JS แทนการ submit ตรงๆ --}}
+                                     <button type="button" class="btn-delete"
+                                         onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')">
+                                         ลบ
+                                     </button>
                                  </div>
                                  {{-- ปุ่มแก้ไข ดึงข้อมูลใส่ data-* attributes --}}
 
@@ -413,7 +418,7 @@
 
                              // แสดง Toast เมื่อสำเร็จ
                              Swal.mixin({
-                                 toast: true,
+
                                  position: 'top-end',
                                  showConfirmButton: false,
                                  timer: 1500,
@@ -428,6 +433,24 @@
                              checkbox.checked = originalStatus; // คืนค่าปุ่ม
                              Swal.fire('ผิดพลาด', err.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้', 'error');
                          });
+                 }
+
+                 function confirmDelete(id, name) {
+                     Swal.fire({
+                         title: `คุณต้องการลบ<br><span style="font-size: 18px; color: #7b4a2e; ">"${name}"</span><br>ใช่หรือไม่?`,
+                         icon: 'warning',
+                         scrollbarPadding: false, // ป้องกันการเพิ่ม padding ที่ทำให้ Navbar ขยับ
+                         showCancelButton: true,
+                         confirmButtonColor: '#d33',
+                         cancelButtonColor: '#4CAF50 ',
+                         confirmButtonText: 'ลบ',
+                         cancelButtonText: 'ยกเลิก',
+                         reverseButtons: true
+                     }).then((result) => {
+                         if (result.isConfirmed) {
+                             document.getElementById('delete-form-' + id).submit();
+                         }
+                     });
                  }
              </script>
          </x-card>

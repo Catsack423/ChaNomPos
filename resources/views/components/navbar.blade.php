@@ -8,9 +8,18 @@
     <link rel="stylesheet" href=" {{ asset('css/global.css') }}">
     <link rel="stylesheet" href=" {{ asset('css/navbar.css') }}">
 </head>
+
 <body>
     <div class="nav">
-        <a href="{{ route('dashboard') }}">
+
+        <a
+            href="
+             @if (auth()->check() && auth()->user()->admin) {{ route('admindashboard') }}
+               
+            @else   
+                    {{ route('dashboard') }} @endif
+        
+        ">
             <div class="brand">
                 <div class="logo">
                     <img id="logopic" src="{{ asset('img/logo.png') }}" alt="eror">
@@ -22,23 +31,15 @@
         </a>
         <div style="flex: 1;" class="spae"></div>
         <div class="tabs" role="tablist" aria-label="Sections">
-             @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
-                <a href="{{ route('dashboard') }}"><button class="tab" data-target="user">Staff</button></a>
+
+            @if (auth()->check() && auth()->user()->admin)
+                <a href="{{ route('admindashboard') }}"><button class="tab active"
+                        data-target="admin">Admin</button></a>
             @else
                 <a href="{{ route('dashboard') }}"><button class="tab active" data-target="user">Staff</button></a>
             @endif
 
-            @if (auth()->check() && auth()->user()->admin)
-                @if (Route::is('adminmenu') || Route::is('adminstock') || Route::is('admindashboard'))
-                    <a href="{{ route('admindashboard') }}"><button class="tab active"
-                            data-target="admin">Admin</button></a>
-                @else
-                    <a href="{{ route('admindashboard') }}"><button class="tab"
-                            data-target="admin">Admin</button></a>
-                @endif
-            @endif
 
-           
 
             <form method="POST" action="{{ route('logout') }}" style="display: contents;">
                 @csrf
@@ -49,4 +50,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -1,7 +1,12 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/bubble.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <x-tagbar />
+    @if (auth()->check() && auth()->user()->admin)
+        <x-tagbaradmin />
+    @else
+        <x-tagbar />
+    @endif
+
 
     <main>
         <div class="grid cols-2">
@@ -138,7 +143,7 @@
         </div>
     </main>
 
-    
+
 
     {{-- ================= FILTER SCRIPT ================= --}}
     <script>

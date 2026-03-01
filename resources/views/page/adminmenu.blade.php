@@ -167,7 +167,7 @@
                                                              value="{{ $category->id }}" class="category-checkbox">
                                                          <span style="flex:1;">{{ $category->name }}</span>
                                                          <button type="button"
-                                                             onclick="deleteCategory({{ $category->id }})"
+                                                             onclick="deleteCategory({{ $category->id }},'{{ $category->name }}')"
                                                              class="x-delete-btn">✕</button>
                                                      </div>
                                                  @endforeach
@@ -367,16 +367,55 @@
                      });
                  }
 
-                 function deleteCategory(id) {
-                     if (!confirm('ลบประเภทนี้ออกจากระบบถาวร ?')) return;
-                     fetch(`/adminmenu/category/ajax-delete/${id}`, {
-                         method: "DELETE",
-                         headers: {
-                             "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                 function deleteCategory(id, name) {
+                     Swal.fire({
+                         // ใช้ <br> และ <span> เพื่อปรับขนาดฟอนต์ของชื่อประเภทให้เล็กลงตามที่คุณต้องการ
+                         title: `คุณต้องการลบประเภทสินค้า<br><span style="font-size: 18px; color: #7b4a2e;">"${name}"</span><br>ออกจากระบบถาวรหรือไม่?`,
+                         icon: 'warning',
+                         showCancelButton: true,
+                         confirmButtonColor: '#d33', // สีน้ำตาลธีม Pos ChaNom
+                         cancelButtonColor: '#4CAF50 ',
+                         confirmButtonText: 'OK',
+                         cancelButtonText: 'Cancel',
+                         reverseButtons: true,
+                         scrollbarPadding: false // ป้องกัน Navbar ยืดออก
+                             ,
+                         customClass: {
+                             popup: 'swal-small-popup',
+                             title: 'swal-small-title',
+                             confirmButton: 'swal-small-button',
+                             cancelButton: 'swal-small-button'
                          }
-                     }).then(res => res.json()).then(data => {
-                         if (data.success) {
-                             document.querySelector(`[data-id='${id}']`).remove();
+                     }).then((result) => {
+                         if (result.isConfirmed) {
+                             // หากกดยืนยัน (OK) จึงจะทำการ Fetch เพื่อลบข้อมูล
+                             fetch(`/adminmenu/category/ajax-delete/${id}`, {
+                                     method: "DELETE",
+                                     headers: {
+                                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                         "Accept": "application/json"
+                                     }
+                                 })
+                                 .then(res => res.json())
+                                 .then(data => {
+                                     if (data.success) {
+                                         // ลบ Element ออกจากหน้าจอ
+                                         const item = document.querySelector(`[data-id='${id}']`);
+                                         if (item) item.remove();
+
+                                         // แสดงแจ้งเตือนสำเร็จกึ่งกลางหน้าจอ
+                                         Swal.fire({
+                                             icon: 'success',
+                                             title: 'สำเร็จ!',
+                                             text: 'ลบประเภทสินค้าเรียบร้อยแล้ว',
+                                             confirmButtonColor: '#7b4a2e',
+                                             timer: 1500
+                                         });
+                                     }
+                                 })
+                                 .catch(err => {
+                                     Swal.fire('ผิดพลาด', 'ไม่สามารถลบข้อมูลได้ โปรดลองอีกครั้ง', 'error');
+                                 });
                          }
                      });
                  }
@@ -445,7 +484,13 @@
                          cancelButtonColor: '#4CAF50 ',
                          confirmButtonText: 'ลบ',
                          cancelButtonText: 'ยกเลิก',
-                         reverseButtons: true
+                         reverseButtons: true,
+                         customClass: {
+                             popup: 'swal-small-popup',
+                             title: 'swal-small-title',
+                             confirmButton: 'swal-small-button',
+                             cancelButton: 'swal-small-button'
+                         }
                      }).then((result) => {
                          if (result.isConfirmed) {
                              document.getElementById('delete-form-' + id).submit();

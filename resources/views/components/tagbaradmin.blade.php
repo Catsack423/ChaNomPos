@@ -19,6 +19,14 @@
         @else
             <a href="{{ route('adminstock') }}" class='btn1   act'>จัดการสต็อค</a>
         @endif
+        @if (Route::is('dashboard'))
+            <a href="{{ route('dashboard') }}" class='btn1 disable'>🛒 สั่งเมนู</a>
+        @else
+            <a href="{{ route('dashboard') }}" class='btn1 act'>🛒 สั่งเมนู</a>
+        @endif
 
+
+       
+        
     </div>
 </body>

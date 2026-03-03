@@ -162,9 +162,13 @@
             document.getElementById('editModal').style.display = 'flex';
             document.getElementById('editForm').action = `/admin/sales/${sale.id}`;
 
-            let date = new Date(sale.sold_at);
-            let formatted = date.toISOString().slice(0, 19);
-            document.getElementById('edit_date').value = formatted;
+            // 🔥 ตั้งเวลาเป็นปัจจุบัน
+            let now = new Date();
+            let local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                            .toISOString()
+                            .slice(0,19);
+
+            document.getElementById('edit_date').value = local;
 
             let container = document.getElementById('itemsContainer');
             container.innerHTML = '';
@@ -226,13 +230,24 @@
 
             document.getElementById('edit_price').value = total.toFixed(2) + " ฿";
         }
-
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            if (document.querySelectorAll('.item-row').length === 0) {
+                Swal.fire({
+                icon: 'error',
+                title: 'ผิดพลาด',
+                text: 'ออเดอร์ต้องมีสินค้าอย่างน้อย 1 รายการ',
+            });
+                e.preventDefault();
+            }
+        });
         window.onclick = function(event) {
             let modal = document.getElementById('editModal');
             if (event.target === modal) {
                 closeEditModal();
             }
         }
+
+        
     </script>
 
 </x-app-layout>

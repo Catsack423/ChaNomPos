@@ -13,27 +13,43 @@ use Illuminate\Support\Facades\DB;
 
 class OrderHistoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             $today = Carbon::today();
 
-            // ดึงข้อมูลการขาย พร้อมสินค้าและชื่อสินค้า (Eager Loading)
-            $sales = Sale::with(['items.product'])
-                ->whereDate('sold_at', $today)
-                ->orderBy('sold_at', 'desc')
-                ->paginate(5);
+            $query = Sale::with(['items.product'])
+                ->whereDate('sold_at', $today);
 
-            $totalSalesAmount = Sale::whereDate('sold_at', $today)
-                ->sum('total_price');
+            if ($request->filled('search')) {
+
+                $search = trim($request->search);
+
+                $query->where(function ($q) use ($search) {
+
+                    // 🔥 ค้นหา ID แบบปกติ
+                    $q->orWhere('id', 'like', '%' . str_replace('#', '', $search) . '%');
+
+                    // 🔥 ค้นหาชื่อเมนู
+                    $q->orWhereHas('items.product', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+
+                });
+            }
+               
+            $sales = $query->orderBy('sold_at', 'desc')
+               ->orderBy('id', 'desc')
+               ->paginate(10)
+               ->withQueryString();
+            $totalSalesAmount = (clone $query)->sum('total_price');
 
             return view('page.orderhistory', compact('sales', 'totalSalesAmount'));
-            
+
         } catch (\Exception $e) {
             return back()->with('error', 'ไม่สามารถโหลดข้อมูลประวัติการขายได้: ' . $e->getMessage());
         }
     }
-
     /**
      * ฟังก์ชันสำหรับยกเลิกออเดอร์ (คืนสต็อก + บันทึก Log + ลบรายการ)
      */

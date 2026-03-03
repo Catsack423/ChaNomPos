@@ -7,10 +7,16 @@
             <div class="header-section">
                 <h2>ประวัติการสั่งซื้อ</h2>
                 <div class="search">
-                    <input type="text" id="searchInput" placeholder="ค้นหา...">
+                    <form method="GET" action="{{ route('orderhistory') }}">
+                        <div class="search">
+                            <input type="text" 
+                                name="search"
+                                placeholder="ค้นหา ID หรือชื่อสินค้า..."
+                                value="{{ request('search') }}">
+                        </div>
+                    </form>
                 </div>
             </div>
-
             <div class="summary-container">
                 <div class="summary-card">
                     <div class="summary-label">วันที่</div>
@@ -91,15 +97,4 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById("searchInput").addEventListener("keyup", function() {
-            let input = this.value.toLowerCase();
-            let rows = document.querySelectorAll("#order-table tbody tr");
-
-            rows.forEach(function(row) {
-                let text = row.innerText.toLowerCase();
-                row.style.display = text.includes(input) ? "" : "none";
-            });
-        });
-    </script>
 </x-app-layout>

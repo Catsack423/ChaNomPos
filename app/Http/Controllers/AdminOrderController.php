@@ -16,14 +16,17 @@ class AdminOrderController extends Controller
             $query = Sale::with('items.product');
 
             if ($request->filled('search')) {
-                $rawSearch = trim($request->search);
-                $cleanSearch = str_replace('#', '', $rawSearch);
-                $query->where(function ($q) use ($cleanSearch) {
-                    $q->orWhereRaw("CAST(id AS CHAR) LIKE ?", ['%' . $cleanSearch . '%']);
-                    $q->orWhereRaw("LPAD(id, 4, '0') LIKE ?", ['%' . $cleanSearch . '%']);
-                    $q->orWhereHas('items.product', function ($subQuery) use ($cleanSearch) {
-                        $subQuery->where('name', 'like', '%' . $cleanSearch . '%');
+
+                $search = trim(str_replace('#', '', $request->search));
+
+                $query->where(function ($q) use ($search) {
+
+                    $q->where('id', 'like', "%{$search}%")
+
+                    ->orWhereHas('items.product', function ($subQuery) use ($search) {
+                        $subQuery->where('name', 'like', "%{$search}%");
                     });
+
                 });
             }
 
@@ -35,7 +38,9 @@ class AdminOrderController extends Controller
                 $query->whereDate('sold_at', '<=', $request->to_date);
             }
 
-            $sales = $query->orderBy('sold_at', 'desc')->get();
+            $sales = $query->orderBy('sold_at', 'desc')
+               ->orderBy('id', 'desc')
+               ->get();
 
             $grandTotal = $sales->sum(function ($sale) {
                 return $sale->items->sum(function ($item) {
@@ -82,29 +87,35 @@ class AdminOrderController extends Controller
 
     public function update(Request $request, $id)
     {
+        // 🔥 เช็คก่อนเข้า transaction
+        if (!$request->has('products') || count($request->products) == 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'ออเดอร์ต้องมีสินค้าอย่างน้อย 1 รายการ');
+        }
+
         try {
             DB::transaction(function () use ($request, $id) {
+
                 $sale = Sale::findOrFail($id);
-                
-                // ลบรายการเก่าออกก่อน
+
                 $sale->items()->delete();
-                
+
                 $total = 0;
 
-                if ($request->has('products')) {
-                    foreach ($request->products as $index => $productId) {
-                        $product = Product::findOrFail($productId);
-                        $quantity = $request->quantities[$index];
+                foreach ($request->products as $index => $productId) {
 
-                        $subtotal = $product->price * $quantity;
-                        $total += $subtotal;
+                    $product = Product::findOrFail($productId);
+                    $quantity = $request->quantities[$index];
 
-                        $sale->items()->create([
-                            'product_id' => $productId,
-                            'quantity'   => $quantity,
-                            'price'      => $product->price,
-                        ]);
-                    }
+                    $subtotal = $product->price * $quantity;
+                    $total += $subtotal;
+
+                    $sale->items()->create([
+                        'product_id' => $productId,
+                        'quantity'   => $quantity,
+                        'price'      => $product->price,
+                    ]);
                 }
 
                 $sale->update([
@@ -113,10 +124,12 @@ class AdminOrderController extends Controller
                 ]);
             });
 
-            return redirect()->back()->with('success', 'แก้ไขข้อมูลออเดอร์เรียบร้อยแล้ว');
+            return redirect()->back()->with('success', 'อัปเดตสำเร็จ');
 
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'ไม่สามารถอัปเดตข้อมูลได้: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'ไม่สามารถอัปเดตข้อมูลได้');
         }
     }
 }

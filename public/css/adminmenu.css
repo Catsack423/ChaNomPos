@@ -1,11 +1,14 @@
 /* ===== กรอบใหญ่ ===== */
+/* ===== กรอบใหญ่ ===== */
 .menu-wrapper {
     background: #f8f8f8;
     border-radius: 20px;
     padding: 10px;
     box-shadow: 0 12px 35px rgba(0,0,0,0.08);
-}
 
+    max-height: 80vh;   /* กำหนดความสูง */
+    overflow-y: auto;    /* ให้เลื่อนแนวตั้ง */
+}
 /* ===== Header ===== */
 .menu-header h4 {
     font-weight: 600;

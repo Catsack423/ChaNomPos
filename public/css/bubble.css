@@ -177,6 +177,20 @@ select {
   font-size: 13px;
   color: var(--muted);
 }
+
+#productList{
+
+
+    max-height: 70vh;   /* กำหนดความสูง */
+    overflow-y: auto;    /* ให้เลื่อนแนวตั้ง */
+
+}
+#cartContainer{
+  
+    max-height: 70vh;   /* กำหนดความสูง */
+    overflow-y: auto;    /* ให้เลื่อนแนวตั้ง */
+}
+
 @media(max-width:741px) {
    .mini{
     display: none;

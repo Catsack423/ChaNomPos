@@ -2,13 +2,17 @@
 <html lang="th">
 
 <head>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Regular.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Bold.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Italic.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Light.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Thin.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-SemiBold.ttf') }}" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/Prompt-Medium.ttf') }}" as="font" type="font/ttf" crossorigin>
+
+
+    <link rel="preload" href="{{ asset('fonts/Prompt-Bold.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+    <link rel="preload" as="image" href="{{ asset('img/logo.png') }}" fetchpriority="high">
+    <link rel="preload" href="{{ asset('fonts/Prompt-Regular.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Medium.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/Prompt-Light.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+
+
 
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <meta charset="UTF-8">
@@ -17,8 +21,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PosChaNom</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>

@@ -1,6 +1,7 @@
 <x-app-layout>
     <x-tagbaradmin />
     <link rel="stylesheet" href="{{ asset('css/adminhistory.css') }}">
+    
     <div class="grid productcols">
         <div class="card">
             

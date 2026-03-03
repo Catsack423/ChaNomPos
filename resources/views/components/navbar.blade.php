@@ -2,12 +2,28 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preload" as="image" href="{{ asset('img/logo.png') }}" fetchpriority="high">
     <link rel="stylesheet" href=" {{ asset('css/global.css') }}">
     <link rel="stylesheet" href=" {{ asset('css/navbar.css') }}">
 </head>
+<style>
+    #logopic {
+        /* กำหนดขนาดสูงสุดที่ยอมรับได้ */
+        width: 100%;
+        max-width: 60px;
+        /* ปรับขนาดตามต้องการ */
+        height: auto;
+        /* ให้ความสูงปรับตามอัตราส่วนของรูปจริง */
+
+        /* กรณีต้องการล็อคขนาดพื้นที่แต่ไม่ให้รูปเบี้ยว */
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+
+        border-radius: 15%;
+        margin-left: 5%;
+        /* ปรับ margin เป็น % เพื่อให้ dynamic */
+    }
+</style>
 
 <body>
     <div class="nav">
@@ -22,7 +38,8 @@
         ">
             <div class="brand">
                 <div class="logo">
-                    <img id="logopic" src="{{ asset('img/logo.png') }}" alt="eror">
+                    <img id="logopic" loading="eager" fetchpriority="high"src="{{ asset('img/logo.png') }}"
+                        alt="eror">
                 </div>
                 <div>
                     <div>PosChaNom</div>

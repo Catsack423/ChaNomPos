@@ -25,22 +25,6 @@
     letter-spacing: .2px;
 }
 
-#logopic {
-    /* กำหนดขนาดสูงสุดที่ยอมรับได้ */
-    width: 100%;
-    max-width: 60px;
-    /* ปรับขนาดตามต้องการ */
-    height: auto;
-    /* ให้ความสูงปรับตามอัตราส่วนของรูปจริง */
-
-    /* กรณีต้องการล็อคขนาดพื้นที่แต่ไม่ให้รูปเบี้ยว */
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-
-    border-radius: 15%;
-    margin-left: 5%;
-    /* ปรับ margin เป็น % เพื่อให้ dynamic */
-}
 
 
 

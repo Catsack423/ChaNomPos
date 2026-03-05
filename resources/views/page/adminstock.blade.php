@@ -1,9 +1,9 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/adminstock.css') }}">
-    
+
     <x-tagbaradmin />
 
-    <div class="grid stockcols" >
+    <div class="grid stockcols">
 
         <div class="card"
             style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -107,9 +107,9 @@
     </div>
 
     <div style="" class="grid logcols">
-        <div class="card"
-            >
-            <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #000000; font-weight: bold" >บันทึกการเปลี่ยนแปลง</h2>
+        <div class="card">
+            <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #000000; font-weight: bold">บันทึกการเปลี่ยนแปลง
+            </h2>
 
             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                 <table class="bubble-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
@@ -161,11 +161,38 @@
         }
 
         function confirmDelete(id, name) {
-            if (confirm(`คุณต้องการลบวัตถุดิบ "${name}" ใช่หรือไม่?`)) {
-                const form = document.getElementById('delete-form');
-                form.action = `/admin/stock/delete/${id}`;
-                form.submit();
-            }
+            Swal.fire({
+                // ใช้ <br> และ <span> เพื่อปรับขนาดฟอนต์ของชื่อประเภทให้เล็กลงตามที่คุณต้องการ
+                title: `คุณต้องการลบ<br><span style="font-size: 18px; color: #7b4a2e;">"${name}"</span><br>ออกจากระบบถาวรหรือไม่?`,
+                html: `
+            <div style=" color: #d33; font-weight: bold; font-size: 0.9rem;">
+                ⚠️ คำเตือน: ข้อมูลใน Log ทั้งหมดที่เกี่ยวข้องจะถูกลบออกด้วย 
+                และไม่สามารถเรียกคืนได้!
+            </div>
+        `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33', // สีน้ำตาลธีม Pos ChaNom
+                cancelButtonColor: '#4CAF50 ',
+                confirmButtonText: 'DELETE',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                scrollbarPadding: false // ป้องกัน Navbar ยืดออก
+                    ,
+                customClass: {
+                    popup: 'swal-small-popup',
+                    title: 'swal-small-title',
+                    confirmButton: 'swal-small-button',
+                    cancelButton: 'swal-small-button'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ถ้าผู้ใช้กดยืนยัน
+                    const form = document.getElementById('delete-form');
+                    form.action = `/admin/stock/delete/${id}`;
+                    form.submit();
+                }
+            });
         }
     </script>
 </x-app-layout>

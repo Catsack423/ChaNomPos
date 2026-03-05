@@ -440,3 +440,15 @@ select:focus {
     }
 
 }
+.swal-small-title {
+    font-size: 20px !important; /* ปรับขนาดหัวข้อให้เล็กลง */
+    
+    line-height: 1.4 !important;
+    color: #333 !important;
+    margin-bottom: 15px !important;
+}
+
+.swal-small-text {
+    font-size: 15px !important; /* ปรับขนาดข้อความรายละเอียด */
+    color: #666 !important;
+}

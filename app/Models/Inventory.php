@@ -11,7 +11,7 @@ class Inventory extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['ingredient_id','quantity','min_level','updated_at'];
+    protected $fillable = ['ingredient_id','quantity','updated_at'];
 
     public function ingredient()
     {

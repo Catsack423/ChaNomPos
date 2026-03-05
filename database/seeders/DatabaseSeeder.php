@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             Inventory::create([
                 'ingredient_id' => $ing->id,
                 'quantity' => $initialQty,
-                'min_level' => 500,
+                
             ]);
 
             InventoryLog::create([

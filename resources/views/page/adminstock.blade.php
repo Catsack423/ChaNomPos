@@ -3,7 +3,7 @@
     
     <x-tagbaradmin />
 
-    <div class="grid stockcols" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px;">
+    <div class="grid stockcols" >
 
         <div class="card"
             style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -106,9 +106,9 @@
         </div>
     </div>
 
-    <div style="padding: 0 20px 20px 20px;">
+    <div style="" class="grid logcols">
         <div class="card"
-            style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 70%; margin: 0 auto;">
+            >
             <h2 style="margin-bottom: 10px; font-size: 1.2rem; color: #000000; font-weight: bold" >บันทึกการเปลี่ยนแปลง</h2>
 
             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">

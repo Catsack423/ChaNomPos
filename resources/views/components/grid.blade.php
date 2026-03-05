@@ -7,7 +7,7 @@
 
         .cols {
             grid-template-columns: 1fr;
-            max-width: 70%;
+            max-width: 80%;
             margin: 20px auto;
             padding: 0 16px;
 

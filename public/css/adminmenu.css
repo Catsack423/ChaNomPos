@@ -437,3 +437,12 @@ input:checked + .slider:before {
 
 
 /* ปรับขนาด Icon ให้เล็กลงด้วย */
+
+
+.cols {
+    grid-template-columns: 1fr;
+    max-width: 80%; 
+    margin: 20px auto; 
+    padding: 0 16px;
+    
+}

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ingredient_id')->constrained()->onDelete('cascade');
             $table->decimal('quantity')->default(0);
-            $table->decimal('min_level')->default(0);
+            
             $table->timestamp('updated_at');
         });
     }

@@ -1,130 +1,130 @@
 <x-app-layout>
     <x-tagbaradmin />
     <link rel="stylesheet" href="{{ asset('css/adminhistory.css') }}">
-    
+
     <div class="grid productcols">
         <div class="card">
-            
 
-                <h2 class="admin-title">รายงานยอดขายทั้งหมด</h2>
-                <div class="admin-filter-card">
-                    <form method="GET" action="{{ route('admindashboard') }}" class="admin-filter-form">
 
-                        <div class="filter-group search">
-                            <label>ค้นหาออเดอร์</label>
-                            <input type="text" name="search" placeholder="ค้นหา..." value="{{ request('search') }}">
-                        </div>
+            <h2 class="admin-title">รายงานยอดขายทั้งหมด</h2>
+            <div class="admin-filter-card">
+                <form method="GET" action="{{ route('admindashboard') }}" class="admin-filter-form">
 
-                        <div class="filter-group">
-                            <label>จากวันที่</label>
-                            <input type="date" name="from_date" value="{{ request('from_date') }}">
-                        </div>
-
-                        <div class="filter-group">
-                            <label>ถึงวันที่</label>
-                            <input type="date" name="to_date" value="{{ request('to_date') }}">
-                        </div>
-
-                        <div class="filter-buttons">
-                            <button type="submit" class="btn-search">
-                                ค้นหา
-                            </button>
-
-                            <a href="{{ route('admindashboard') }}" class="btn-reset">
-                                รีเซ็ต
-                            </a>
-                        </div>
-
-                    </form>
-                </div>
-
-                <div class="grand-total-box">
-                    <div class="grand-total-label">
-                        ยอดขายรวมทั้งหมด
-                    </div>
-                    <div class="grand-total-price">
-                        {{ number_format($grandTotal, 2) }} ฿
-                    </div>
-                </div>
-
-                @foreach ($salesByMonth as $month => $monthlySales)
-                    @php
-                        $monthlyTotal = $monthlySales->sum('total_price');
-                    @endphp
-
-                    <div class="month-header">
-                        <div>
-                            {{ $month }}
-                        </div>
-                        <div class="month-total">
-                            ยอดขายรวม {{ number_format($monthlyTotal, 2) }} ฿
-                        </div>
+                    <div class="filter-group search">
+                        <label>ค้นหาออเดอร์</label>
+                        <input type="text" name="search" placeholder="ค้นหา..." value="{{ request('search') }}">
                     </div>
 
-                    <div class="table-container">
-                        <table class="order-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>สินค้า</th>
-                                    <th>จำนวน</th>
-                                    <th>ยอดรวม</th>
-                                    <th>วันที่</th>
-                                    <th>จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($monthlySales as $sale)
-                                    <tr>
-                                        <td>#{{ str_pad($sale->id, 4, '0', STR_PAD_LEFT) }}</td>
-
-                                        <td>
-                                            @foreach ($sale->items as $item)
-                                                <span class="item-tag">
-                                                    {{ $item->product->name }} x{{ $item->quantity }}
-                                                </span>
-                                            @endforeach
-                                        </td>
-
-                                        <td>
-                                            {{ $sale->items->sum('quantity') }} ชิ้น
-                                        </td>
-
-                                        <td class="price-text">
-                                            {{ number_format($sale->total_price, 2) }} ฿
-                                        </td>
-
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($sale->sold_at)->format('d/m/Y') }}
-                                        </td>
-
-                                        <td>
-                                            <div style="display:flex; gap:8px;">
-
-                                                <button class="btn-edit"
-                                                    onclick='openEditModal(@json($sale))'>
-                                                    แก้ไข
-                                                </button>
-
-                                                <form action="{{ route('admin.sales.destroy', $sale->id) }}"
-                                                    method="POST" onsubmit="return confirm('ยืนยันการลบรายการนี้?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn-delete">
-                                                        ลบ
-                                                    </button>
-                                                </form>
-
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="filter-group">
+                        <label>จากวันที่</label>
+                        <input type="date" name="from_date" value="{{ request('from_date') }}">
                     </div>
-                @endforeach
+
+                    <div class="filter-group">
+                        <label>ถึงวันที่</label>
+                        <input type="date" name="to_date" value="{{ request('to_date') }}">
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button type="submit" class="btn-search">
+                            ค้นหา
+                        </button>
+
+                        <a href="{{ route('admindashboard') }}" class="btn-reset">
+                            รีเซ็ต
+                        </a>
+                    </div>
+
+                </form>
             </div>
-        
+
+            <div class="grand-total-box">
+                <div class="grand-total-label">
+                    ยอดขายรวมทั้งหมด
+                </div>
+                <div class="grand-total-price">
+                    {{ number_format($grandTotal, 2) }} ฿
+                </div>
+            </div>
+
+            @foreach ($salesByMonth as $month => $monthlySales)
+                @php
+                    $monthlyTotal = $monthlySales->sum('total_price');
+                @endphp
+
+                <div class="month-header">
+                    <div>
+                        {{ $month }}
+                    </div>
+                    <div class="month-total">
+                        ยอดขายรวม {{ number_format($monthlyTotal, 2) }} ฿
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>สินค้า</th>
+                                <th>จำนวน</th>
+                                <th>ยอดรวม</th>
+                                <th>วันที่</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($monthlySales as $sale)
+                                <tr>
+                                    <td>#{{ str_pad($sale->id, 4, '0', STR_PAD_LEFT) }}</td>
+
+                                    <td>
+                                        @foreach ($sale->items as $item)
+                                            <span class="item-tag">
+                                                {{ $item->product->name }} x{{ $item->quantity }}
+                                            </span>
+                                        @endforeach
+                                    </td>
+
+                                    <td>
+                                        {{ $sale->items->sum('quantity') }} ชิ้น
+                                    </td>
+
+                                    <td class="price-text">
+                                        {{ number_format($sale->total_price, 2) }} ฿
+                                    </td>
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($sale->sold_at)->format('d/m/Y') }}
+                                    </td>
+
+                                    <td>
+                                        <div style="display:flex; gap:8px;">
+
+                                            <button class="btn-edit"
+                                                onclick='openEditModal(@json($sale))'>
+                                                แก้ไข
+                                            </button>
+
+                                            <form action="{{ route('admin.sales.destroy', $sale->id) }}" method="POST"
+                                                class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn-delete" onclick="confirmDelete(this)">
+                                                    ลบ
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endforeach
+        </div>
+
     </div>
 
     <div id="editModal" class="modal-overlay" style="display:none;">
@@ -166,8 +166,8 @@
             // 🔥 ตั้งเวลาเป็นปัจจุบัน
             let now = new Date();
             let local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-                            .toISOString()
-                            .slice(0,19);
+                .toISOString()
+                .slice(0, 19);
 
             document.getElementById('edit_date').value = local;
 
@@ -234,10 +234,12 @@
         document.getElementById('editForm').addEventListener('submit', function(e) {
             if (document.querySelectorAll('.item-row').length === 0) {
                 Swal.fire({
-                icon: 'error',
-                title: 'ผิดพลาด',
-                text: 'ออเดอร์ต้องมีสินค้าอย่างน้อย 1 รายการ',
-            });
+                    heightAuto: false,
+                    scrollbarPadding: false,
+                    icon: 'error',
+                    title: 'ผิดพลาด',
+                    text: 'ออเดอร์ต้องมีสินค้าอย่างน้อย 1 รายการ',
+                });
                 e.preventDefault();
             }
         });
@@ -248,7 +250,28 @@
             }
         }
 
-        
+        function confirmDelete(button) {
+            // ป้องกันการยืดของหน้าเว็บด้วย Options ที่เราคุยกันก่อนหน้า
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "คุณจะไม่สามารถย้อนกลับรายการนี้ได้!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33', // สีน้ำตาลธีม Pos ChaNom
+                cancelButtonColor: '#4CAF50 ',
+                confirmButtonText: 'ลบ',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true,
+                
+                heightAuto: false, // กันเว็บยืด
+                scrollbarPadding: false // กันเว็บขยับ
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ถ้ากดยืนยัน ให้หา Form ที่หุ้มปุ่มนี้อยู่แล้วสั่ง Submit
+                    button.closest('.delete-form').submit();
+                }
+            });
+        }
     </script>
 
 </x-app-layout>

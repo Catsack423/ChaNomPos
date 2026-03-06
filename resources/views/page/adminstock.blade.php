@@ -174,8 +174,8 @@
                 showCancelButton: true,
                 confirmButtonColor: '#d33', // สีน้ำตาลธีม Pos ChaNom
                 cancelButtonColor: '#4CAF50 ',
-                confirmButtonText: 'DELETE',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'ลบ',
+                cancelButtonText: 'ยกเลิก',
                 reverseButtons: true,
                 scrollbarPadding: false // ป้องกัน Navbar ยืดออก
                     ,

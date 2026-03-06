@@ -351,14 +351,8 @@ button {
     background: #dc2626;
 }
 
-button[type="button"] {
-    background: #10b981;
-    color: white;
-}
 
-button[type="button"]:hover {
-    background: #059669;
-}
+
 
 
 #edit_price {

@@ -13,22 +13,26 @@ class MenuController extends Controller
 {
     public function adminMenu()
     {
-        // 1. ดึงข้อมูลสินค้าพร้อมสูตรและสต็อกเพื่อตรวจสอบสถานะก่อน
-        $allProducts = Product::with('recipes.ingredient.inventory')->get();
+        // 1. ดึงข้อมูลสินค้าพร้อมสูตรและสต็อก (Eager Loading เพื่อลด N+1 Query)
+        $allProducts = Product::with('recipes.ingredient.inventory', 'categories')->get();
+
+        $toActivate = [];
+        $toDeactivate = [];
 
         foreach ($allProducts as $product) {
+            // ตั้งต้นให้เป็น true: ถ้าไม่มีสูตรเลย (isEmpty) จะถือว่า Active ได้ทันที
             $canMake = true;
 
-            // ตรวจสอบสต็อกเบื้องต้น (ทำได้ 1 ชิ้นหรือไม่)
-            if ($product->recipes->isEmpty()) {
-                $canMake = false;
-            } else {
+            // ถ้ามีสูตร ให้ตรวจสอบสต็อก
+            if (!$product->recipes->isEmpty()) {
                 foreach ($product->recipes as $recipe) {
+                    // กรณีข้อมูลวัตถุดิบหรือสต็อกหายไป ให้ถือว่าทำไม่ได้
                     if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
                         $canMake = false;
                         break;
                     }
 
+                    // ถ้าสต็อกมีน้อยกว่าที่สูตรระบุ
                     if ($recipe->ingredient->inventory->quantity < $recipe->amount) {
                         $canMake = false;
                         break;
@@ -36,13 +40,23 @@ class MenuController extends Controller
                 }
             }
 
-            // อัปเดต is_active ให้ตรงตามความจริง (เปิดเองถ้าของพอ / ปิดถ้าของหมด)
-            if ($product->is_active != $canMake) {
-                $product->update(['is_active' => $canMake ? 1 : 0]);
+            // เก็บ ID สินค้าที่ต้องเปลี่ยนสถานะ เพื่ออัปเดตทีเดียว (Optimization)
+            if ($canMake && !$product->is_active) {
+                $toActivate[] = $product->id;
+            } elseif (!$canMake && $product->is_active) {
+                $toDeactivate[] = $product->id;
             }
         }
 
-        // 2. ดึงข้อมูลทั้งหมดที่อัปเดตแล้วเพื่อส่งไปที่ View
+        // อัปเดตสถานะแบบ Bulk (ยิง Query แค่ 1-2 ครั้ง แทนการยิงใน Loop)
+        if (!empty($toActivate)) {
+            Product::whereIn('id', $toActivate)->update(['is_active' => 1]);
+        }
+        if (!empty($toDeactivate)) {
+            Product::whereIn('id', $toDeactivate)->update(['is_active' => 0]);
+        }
+
+        // 2. ดึงข้อมูลใหม่หลังจากอัปเดตแล้วเพื่อส่งไป View
         $products = Product::with(['recipes.ingredient', 'categories'])->get();
         $ingredients = Ingredient::with('recipe')->get();
         $categories = Category::all();
@@ -83,7 +97,7 @@ class MenuController extends Controller
             ], 500);
         }
     }
-    
+
     // ================= โหมดสร้างสินค้า (Create) =================
     public function store(Request $request)
     {

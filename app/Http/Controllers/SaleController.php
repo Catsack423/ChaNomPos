@@ -22,11 +22,14 @@ class SaleController extends Controller
         $product = Product::with('recipes.ingredient.inventory')->find($productId);
         if (!$product) return false;
 
-        if ($product->recipes->isEmpty()) return false;
+        // แก้จุดนี้: ถ้าไม่มีสูตร ให้ถือว่า "มีของ" (Pass)
+        if ($product->recipes->isEmpty()) {
+            return true;
+        }
 
         foreach ($product->recipes as $recipe) {
             if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
-                return false; 
+                return false;
             }
 
             $inventory = $recipe->ingredient->inventory;
@@ -44,7 +47,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        
+
 
 
         // 1. ตรวจสอบ Inventory และอัปเดตสถานะ is_active ตามสต็อก (is_show ไม่เกี่ยวกับการคำนวณสต็อก)
@@ -68,7 +71,7 @@ class SaleController extends Controller
             $cartChanged = false;
             foreach ($cart as $id => $item) {
                 $productInCart = Product::find($id);
-                
+
                 // ตรวจสอบ: ต้องมีสินค้า + ต้อง Active + ต้อง Show + สต็อกต้องพอตามจำนวน
                 if (!$productInCart || !$productInCart->is_active || !$productInCart->is_show || !$this->hasEnoughStock($id, $item['quantity'])) {
                     unset($cart[$id]);
@@ -100,7 +103,7 @@ class SaleController extends Controller
     {
         $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
-        
+
         // ตรวจสอบผ่านฟังก์ชันตัวช่วย (check_active_product_in_cart ตรวจทั้ง active และ show)
         if ($res = $this->check_active_product_in_cart($product, $cart)) {
             return $res;
@@ -134,7 +137,7 @@ class SaleController extends Controller
     {
         $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
-        
+
         if ($res = $this->check_active_product_in_cart($product, $cart)) {
             return $res;
         }
@@ -219,7 +222,7 @@ class SaleController extends Controller
 
                     $totalDeduction = $recipe->amount * $item['quantity'];
                     $inventory = Inventory::where('ingredient_id', $recipe->ingredient_id)->first();
-                    
+
                     if ($inventory) {
                         $inventory->decrement('quantity', $totalDeduction);
 
@@ -251,9 +254,9 @@ class SaleController extends Controller
                 unset($cart[$product->id]);
                 session()->put('cart', $cart);
             }
-            
+
             $reason = !$product->is_show ? "ถูกซ่อนโดยผู้ดูแล" : "วัตถุดิบไม่พอ";
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => "สินค้า '{$product->name}' ไม่พร้อมจำหน่ายเนื่องจาก{$reason}",

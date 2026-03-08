@@ -136,7 +136,7 @@ class StockController extends Controller
                 Inventory::create([
                     'ingredient_id' => $ingredient->id,
                     'quantity' => $request->initial_quantity,
-                    'min_level' => 0
+                    
                 ]);
 
                 // เพิ่มการบันทึก Log สำหรับสต็อกเริ่มต้น

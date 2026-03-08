@@ -101,8 +101,12 @@ class SaleController extends Controller
      */
     public function addToCart(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::find($request->product_id);
         $cart = session()->get('cart', []);
+
+        if (!$product){
+            return response()->json(['status' => 'error', 'message' => 'สินค้าไม่พร้อมใช้งาน'], 400);
+        }
 
         // ตรวจสอบผ่านฟังก์ชันตัวช่วย (check_active_product_in_cart ตรวจทั้ง active และ show)
         if ($res = $this->check_active_product_in_cart($product, $cart)) {

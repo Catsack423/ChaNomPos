@@ -184,21 +184,22 @@
                     })
                 })
                 .then(async res => {
-                    let data = await res.json();
+                    // 1. เช็ค Content-Type ว่าเป็น JSON ไหมก่อน parse
+                    const contentType = res.headers.get("content-type");
+                    let data = {};
 
-                    // --- กรณีเกิด Error (HTTP 400 หรืออื่นๆ) ---
+                    if (contentType && contentType.includes("application/json")) {
+                        data = await res.json();
+                    }
+
+                    // 2. ถ้า Status Code ไม่ใช่ 2xx
                     if (!res.ok) {
                         Swal.fire({
                             icon: 'error',
+                            scrollbarPadding: false,
                             title: 'เกิดข้อผิดพลาด',
-                            text: data.message || 'ไม่สามารถดำเนินการได้',
-                            confirmButtonColor: '#d33'
+                            text: data.message || 'ไม่พบสินค้าหรือสินค้าถูกลบไปแล้ว',
                         });
-
-                        // หากมีข้อมูลตะกร้าส่งกลับมา (เช่น กรณีสินค้าถูกเอาออกเพราะไม่ Active) ให้ Update UI ด้วย
-                        if (data.cart) {
-                            updateCartUI(data.cart, data.total);
-                        }
                         return;
                     }
 
@@ -206,6 +207,7 @@
                     // ใช้ Toast เพื่อความลื่นไหลในการใช้งาน (หายไปเองใน 1.5 วินาที)
                     const Toast = Swal.mixin({
                         toast: true,
+                        scrollbarPadding: false,
                         position: 'top-end',
                         showConfirmButton: false,
                         timer: 1100,

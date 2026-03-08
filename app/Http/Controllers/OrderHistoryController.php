@@ -30,7 +30,7 @@ class OrderHistoryController extends Controller
                     // 🔥 ค้นหา ID แบบปกติ
                     $q->orWhere('id', 'like', '%' . str_replace('#', '', $search) . '%');
 
-                    // 🔥 ค้นหาชื่อเมนู
+                    //  ค้นหาชื่อเมนู
                     $q->orWhereHas('items.product', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });

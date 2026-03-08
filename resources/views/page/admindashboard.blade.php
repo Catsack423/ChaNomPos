@@ -67,6 +67,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>สินค้า</th>
+                                <th>พนักงาน</th>
                                 <th>จำนวน</th>
                                 <th>ยอดรวม</th>
                                 <th>วันที่</th>
@@ -85,7 +86,9 @@
                                             </span>
                                         @endforeach
                                     </td>
-
+                                    <td>
+                                        {{ $sale->user->name }} 
+                                    </td>
                                     <td>
                                         {{ $sale->items->sum('quantity') }} ชิ้น
                                     </td>

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('real_ingredient_id')->constrained();
             $table->foreignId('user_id')->constrained();
-            $table->enum('action', ['add','reduce']);
+            $table->enum('action', ['add','reduce','import','expried','out']);
             $table->decimal('quantity');
             $table->string('reason');
             $table->timestamp('created_at')->useCurrent();

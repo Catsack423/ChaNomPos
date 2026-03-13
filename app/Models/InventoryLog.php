@@ -15,7 +15,7 @@ class InventoryLog extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'ingredient_id',
+        'real_ingredient_id',
         'user_id',
         'action',
         'quantity',
@@ -33,6 +33,10 @@ class InventoryLog extends Model
 
     public function ingredient() {
         return $this->belongsTo(Ingredient::class);
+    }
+
+    public function real_ingredient() {
+        return $this->belongsTo(Real_ingrediant::class);
     }
 
     public function user() {

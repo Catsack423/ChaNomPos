@@ -11,8 +11,8 @@ class Ingredient extends Model
 
     protected $fillable = ['name','unit'];
 
-    public function inventory(){
-        return $this->hasOne(Inventory::class);
+    public function real_ingredient(){
+        return $this->hasMany(Real_ingrediant::class);
     }
 
     public function recipe()
@@ -21,7 +21,7 @@ class Ingredient extends Model
     }
 
     public function logs(){
-        return $this->hasOne(InventoryLog::class);
+        return $this->hasManyThrough(InventoryLog::class, Real_ingrediant::class, 'ingredient_id', 'real_ingredient_id');
     }
 
 }

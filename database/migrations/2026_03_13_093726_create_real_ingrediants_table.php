@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('expried');
             $table->boolean('in_use')->default(false);
             $table->softDeletes();
+            $table->string('imgurl');
             $table->timestamps();
         });
     }

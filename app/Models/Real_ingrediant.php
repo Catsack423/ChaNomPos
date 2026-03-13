@@ -11,7 +11,7 @@ class Real_ingrediant extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'real_ingredients'; 
-    protected $fillable = ['ingredient_id', 'quantity','price','expried' ,'in_use'];
+    protected $fillable = ['ingredient_id', 'quantity','price','expried' ,'in_use','imgurl'];
 
     public function logs(){
         return $this->hasMany(InventoryLog::class);

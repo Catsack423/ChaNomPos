@@ -45,7 +45,7 @@ class InventoryLog extends Model
 
     public function real_ingredient()
 {
-    return $this->belongsTo(Real_ingrediant::class,'real_ingredient_id');
+    return $this->belongsTo(Real_ingrediant::class, 'real_ingredient_id')->withTrashed();
 }
 
     public function user()

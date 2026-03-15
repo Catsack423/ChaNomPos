@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Product;
+use App\Models\Real_ingrediant;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -13,8 +14,18 @@ class MenuController extends Controller
 {
     public function adminMenu()
     {
-        // 1. ดึงข้อมูลสินค้าพร้อมสูตรและสต็อก (Eager Loading เพื่อลด N+1 Query)
-        $allProducts = Product::with('recipes.ingredient.inventory', 'categories')->get();
+        // --- 1. ตรวจสอบและจัดการลบล็อตวัตถุดิบที่หมดแล้ว (Soft Delete) ---
+        // เคลียร์ล็อตที่ใช้หมดแล้วออกก่อน เพื่อให้การคำนวณในขั้นตอนต่อไปแม่นยำ
+        $allLots = Real_ingrediant::all();
+        foreach ($allLots as $lot) {
+            // คำนวณจำนวนคงเหลือจาก Log ผ่านฟังก์ชัน remaining()
+            if ($lot->remaining() <= 0) {
+                $lot->delete();
+            }
+        }
+
+        // --- 2. ดึงข้อมูลสินค้าพร้อมสูตร ---
+        $allProducts = Product::with('recipes', 'categories')->get();
 
         $toActivate = [];
         $toDeactivate = [];
@@ -23,19 +34,24 @@ class MenuController extends Controller
             // ตั้งต้นให้เป็น true: ถ้าไม่มีสูตรเลย (isEmpty) จะถือว่า Active ได้ทันที
             $canMake = true;
 
-            // ถ้ามีสูตร ให้ตรวจสอบสต็อก
+            // ถ้ามีสูตร ให้ตรวจสอบสต็อกวัตถุดิบแต่ละตัวในสูตร
             if (!$product->recipes->isEmpty()) {
                 foreach ($product->recipes as $recipe) {
-                    // กรณีข้อมูลวัตถุดิบหรือสต็อกหายไป ให้ถือว่าทำไม่ได้
-                    if (!$recipe->ingredient || !$recipe->ingredient->inventory) {
-                        $canMake = false;
-                        break;
+
+                    // ดึงล็อตทั้งหมดของวัตถุดิบตัวนี้ (ทั้งที่ in_use = 1 และ 0) ที่ยังไม่ถูกลบ
+                    $lots = Real_ingrediant::where('ingredient_id', $recipe->ingredient_id)->get();
+
+                    // รวมจำนวนคงเหลือทั้งหมดของวัตถุดิบตัวนี้
+                    $totalRemaining = 0;
+                    foreach ($lots as $lot) {
+                        $totalRemaining += $lot->remaining();
                     }
 
-                    // ถ้าสต็อกมีน้อยกว่าที่สูตรระบุ
-                    if ($recipe->ingredient->inventory->quantity < $recipe->amount) {
+                    // ลอจิก: ถ้ายอดรวมทั้งหมด (ทั้งกำลังใช้งาน + ในคลัง) 
+                    // มีน้อยกว่าปริมาณที่ต้องใช้ในสูตร (amount)
+                    if ($totalRemaining < $recipe->amount) {
                         $canMake = false;
-                        break;
+                        break; // วัตถุดิบตัวเดียวไม่พอก็ถือว่าทำสินค้าไม่ได้แล้ว เบรกลูปได้เลย
                     }
                 }
             }
@@ -48,7 +64,8 @@ class MenuController extends Controller
             }
         }
 
-        // อัปเดตสถานะแบบ Bulk (ยิง Query แค่ 1-2 ครั้ง แทนการยิงใน Loop)
+        // --- 3. อัปเดตสถานะแบบ Bulk ---
+        // อัปเดตเฉพาะ is_active ส่วน is_show และค่าอื่นๆ จะไม่ถูกกระทบ
         if (!empty($toActivate)) {
             Product::whereIn('id', $toActivate)->update(['is_active' => 1]);
         }
@@ -56,14 +73,15 @@ class MenuController extends Controller
             Product::whereIn('id', $toDeactivate)->update(['is_active' => 0]);
         }
 
-        // 2. ดึงข้อมูลใหม่หลังจากอัปเดตแล้วเพื่อส่งไป View
+        // --- 4. ดึงข้อมูลใหม่หลังจากอัปเดตแล้วเพื่อส่งไป View ---
         $products = Product::with(['recipes.ingredient', 'categories'])->get();
+        // ถ้าคลาส Ingredient ของคุณสัมพันธ์กับ recipe จริงๆ ก็สามารถใช้โค้ดเดิมได้เลย
+        // แต่ถ้าแก้โครงสร้างแล้ว อาจจะใช้แค่ Ingredient::all(); ก็ได้ครับ
         $ingredients = Ingredient::with('recipe')->get();
         $categories = Category::all();
 
         return view('page.adminmenu', compact('products', 'ingredients', 'categories'));
     }
-
     public function activate($id)
     {
         // หาข้อมูลสินค้า

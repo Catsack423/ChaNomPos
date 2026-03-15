@@ -24,22 +24,32 @@ class InventoryLog extends Model
     ];
 
     // ถ้าคุณต้องการให้ Laravel บันทึกเฉพาะ created_at ให้อัตโนมัติเมื่อสร้างข้อมูล
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-            $model->created_at = $model->freshTimestamp();
-        });
-    }
+   protected static function booted()
+{
+    static::created(function ($log) {
+        // ตรวจสอบว่ามี Lot id หรือไม่
+        if ($log->real_ingredient_id) {
+            $lot = $log->real_ingredient;
+            // ถ้าคำนวณ remaining() แล้วได้ 0 หรือน้อยกว่า ให้ลบจริง (SoftDelete)
+            if ($lot && $lot->remaining() <= 0) {
+                $lot->delete();
+            }
+        }
+    });
+}
 
-    public function ingredient() {
-        return $this->belongsTo(Ingredient::class);
-    }
+    public function ingredient()
+{
+    return $this->belongsTo(Ingredient::class,'ingredient_id');
+}
 
-    public function real_ingredient() {
-        return $this->belongsTo(Real_ingrediant::class);
-    }
+    public function real_ingredient()
+{
+    return $this->belongsTo(Real_ingrediant::class,'real_ingredient_id');
+}
 
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
+    public function user()
+{
+    return $this->belongsTo(User::class,'user_id');
+}
 }

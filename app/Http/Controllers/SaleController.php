@@ -47,9 +47,6 @@ class SaleController extends Controller
      */
     public function index()
     {
-
-
-
         // 1. ตรวจสอบ Inventory และอัปเดตสถานะ is_active ตามสต็อก (is_show ไม่เกี่ยวกับการคำนวณสต็อก)
         $allProducts = Product::with('recipes.ingredient.inventory')->get();
 

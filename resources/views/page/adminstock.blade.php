@@ -21,6 +21,7 @@
                                 <tr style="color: #8b5e3c;">
                                     <th>ลำดับ</th>
                                     <th>ชื่อวัตถุดิบ</th>
+                                    <th>ลบ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -38,7 +39,13 @@
                                             <input type="hidden" name="ingredients[{{ $index }}][ingredient_id]"
                                                 value="{{ $item->id }}">
                                         </td>
-
+                                         <td class="text-center">
+                                        <button type="button"
+                                            onclick="confirmDelete('{{ $item->id }}', '{{ $item->name }}')"
+                                            style="border: 1px solid #ff4d4d; color: #ff4d4d; background: #fff5f5; padding: 5px 12px; border-radius: 8px; font-size: 0.9em; cursor: pointer;">
+                                            ลบ
+                                        </button>
+                                    </td>
                                     </tr>
                                 @endforeach
                             </tbody>

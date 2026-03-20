@@ -1,111 +1,150 @@
+# ChaNomPos - ระบบบริหารจัดการร้านชานมไข่มุก (POS & Inventory)
 
-## 🛠 ขั้นตอนการติดตั้ง (Installation Guide)
+ChaNomPos คือเว็บแอปพลิเคชันสำหรับบริหารจัดการร้านชานมไข่มุกและเครื่องดื่ม พัฒนาด้วย Laravel และ Livewire เพื่อช่วยให้การรับออเดอร์ การจัดการสต็อก และการสรุปยอดขายทำได้ง่ายและมีประสิทธิภาพ
 
-ทำตามขั้นตอนด้านล่างนี้เพื่อตั้งค่าระบบ **Laravel Jetstream (Livewire)**:
+---
 
-### 1. เตรียมสภาพแวดล้อม (Environment Setup)
+## คุณสมบัติเด่น (Features)
 
-* สร้างไฟล์ `.env` (คัดลอกมาจาก `.env.example` แล้วตั้งค่า Database ให้เรียบร้อย)
-* เปิด Terminal แล้ว `cd` เข้าไปยังโฟลเดอร์ Project
+### 🥤 ระบบขายหน้าร้าน (Point of Sale)
+- เลือกรายการเมนูตามหมวดหมู่
+- ระบบตะกร้าสินค้า (เพิ่ม/ลดจำนวน, ลบรายการ)
+- คำนวณราคารวมและชำระเงิน
 
-### 2. ติดตั้ง Package และ Jetstream
+### 📋 การจัดการเมนู (Menu Management)
+- เพิ่ม แก้ไข และลบรายการเมนู
+- จัดการหมวดหมู่สินค้า (Categories)
+- เปิด/ปิด การแสดงผลเมนูที่หมดชั่วคราว
 
-รันคำสั่งเพื่อติดตั้ง Jetstream ผ่าน Composer และเลือกใช้ Stack เป็น Livewire:
+### 📦 ระบบจัดการสต็อก (Inventory Control)
+- ติดตามปริมาณวัตถุดิบ (Ingredients)
+- บันทึกประวัติการเพิ่ม/ลดสต็อก (Stock Logs)
+- ระบบแจ้งเตือนหรือแสดงสถานะวัตถุดิบ
 
-```bash
-composer require laravel/jetstream
-php artisan jetstream:install livewire
+### 📊 ประวัติการสั่งซื้อ (Order History)
+- ดูรายการขายย้อนหลัง
+- ตรวจสอบรายละเอียดในแต่ละออเดอร์
+- สำหรับ Admin: สามารถจัดการ (ลบ/แก้ไข) ออเดอร์ได้
 
+### 🔐 ระบบสมาชิกและสิทธิ์การใช้งาน (Auth & Roles)
+- **Admin**: จัดการเมนู, สต็อกทั้งหมด, และดูภาพรวมระบบ
+- **Staff (User)**: รับออเดอร์หน้าร้านและอัปเดตสต็อกเบื้องต้น
+- ระบบ Profile และความปลอดภัยจาก Laravel Jetstream
+
+---
+
+## เทคโนโลยีที่ใช้ (Technologies Used)
+
+### Framework & Language
+- **PHP 8.1+**
+- **Laravel 10**
+- **Livewire 3** (Full-stack framework for dynamic interfaces)
+
+### UI & Frontend
+- **Tailwind CSS**
+- **Alpine.js**
+- **Blade Templates**
+- **Vite** (Frontend Build Tool)
+
+### Database & Auth
+- **MySQL**
+- **Laravel Jetstream** (Authentication, Profile Management)
+- **Sanctum** (API Authentication)
+
+---
+
+## โครงสร้างโปรเจกต์ (Project Structure)
+
+```text
+ChaNomPos/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AdminOrderController.php   # จัดการออเดอร์สำหรับ Admin
+│   │   ├── MenuController.php         # จัดการรายการเมนูและหมวดหมู่
+│   │   ├── SaleController.php         # ระบบ POS และตะกร้าสินค้า
+│   │   ├── StockController.php        # จัดการวัตถุดิบและสต็อก
+│   │   └── OrderHistoryController.php # ประวัติการสั่งซื้อ
+│   └── Models/                        # Database Models (Product, Ingredient, Order, etc.)
+├── resources/
+│   ├── views/                         # Blade templates (Livewire components)
+│   └── js/ & css/                     # Assets (Tailwind, Alpine.js)
+├── routes/
+│   └── web.php                        # กำหนดเส้นทาง (Routes) ทั้งหมด
+├── database/
+│   ├── migrations/                    # โครงสร้างฐานข้อมูล
+│   └── seeders/                       # ข้อมูลตัวอย่าง (Sample Data)
+└── config/                            # ไฟล์ตั้งค่าระบบ
 ```
 
-### 3. จัดการฐานข้อมูลและ Assets
+---
 
-อัปเดต Schema ของฐานข้อมูล และ Compile ไฟล์ Frontend (CSS/JS):
+## การติดตั้ง (Installation)
 
+### 1. Clone repository
 ```bash
-php artisan migrate
-php artisan migrate:fresh --seed
+git clone https://github.com/yourusername/ChaNomPos.git
+cd ChaNomPos
+```
+
+### 2. ติดตั้ง Dependencies
+```bash
+composer install
 npm install
+```
+
+### 3. ตั้งค่าสภาพแวดล้อม (Environment Setup)
+1. คัดลอกไฟล์ `.env.example` เป็น `.env`
+   ```bash
+   cp .env.example .env
+   ```
+2. สร้างฐานข้อมูลใหม่ใน MySQL (เช่น `chanom_pos`)
+3. แก้ไขไฟล์ `.env` เพื่อเชื่อมต่อฐานข้อมูล:
+   ```env
+   DB_DATABASE=chanom_pos
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+4. สร้าง Application Key:
+   ```bash
+   php artisan key:generate
+   ```
+
+### 4. Migrate และ Seed ข้อมูล
+```bash
+php artisan migrate --seed
+```
+*(การใช้ `--seed` จะช่วยสร้างข้อมูลหมวดหมู่และเมนูเริ่มต้น รวมถึงบัญชี Admin ตัวอย่าง)*
+
+### 5. Build Assets และรันระบบ
+```bash
+npm run dev
+# หรือ
 npm run build
 
+php artisan serve
 ```
 
-### 4. การจัดการไฟล์ Blade (Cleanup)
+---
 
-> [!IMPORTANT]
-> **สำคัญ:** หลังจากติดตั้งเสร็จสิ้น ให้ทำการ **Discard (Undo)** การเปลี่ยนแปลงของไฟล์ `.blade.php` ทั้งหมด เพื่อย้อนกลับไปใช้ Template เดิมที่คุณต้องการ
+## วิธีใช้งาน (Usage)
+
+1. **เข้าสู่ระบบ**: เข้าไปที่ `http://localhost:8000/login`
+2. **หน้าขาย (Dashboard)**: เลือกเมนูที่ต้องการ -> คลิก "เพิ่มลงตะกร้า" -> ตรวจสอบรายการ -> คลิก "ชำระเงิน"
+3. **จัดการสต็อก**: สำหรับเจ้าหน้าที่ สามารถเข้าไปอัปเดตจำนวนวัตถุดิบได้ที่เมนู "สต็อก"
+4. **จัดการระบบ (Admin)**: เข้าถึงหน้าจัดการเมนู เพื่อเพิ่มรายการเครื่องดื่มใหม่ๆ หรือจัดการหมวดหมู่
 
 ---
 
-**เทคนิคเพิ่มเติม:** ถ้าคุณใช้ Git สามารถรันคำสั่งนี้เพื่อล้างไฟล์ Blade ที่ถูกแก้ไขได้รวดเร็ว:
-`git checkout -- resources/views/*.blade.php`
+## สรุปภาพรวมระบบ (System Overview)
+
+| หน้าหลัก (POS) |  | จัดการเมนู |  | สต็อกสินค้า |
+|---|---|---|---|---|
+| (ใส่รูป Screenshot) |  | (ใส่รูป Screenshot) |  | (ใส่รูป Screenshot) |
 
 ---
 
+## ผู้พัฒนา (Developer)
+- Your Name / GitHub Profile
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+*โปรเจกต์นี้สร้างขึ้นเพื่อช่วยเพิ่มประสิทธิภาพในการจัดการร้านเครื่องดื่มขนาดเล็กถึงกลาง*

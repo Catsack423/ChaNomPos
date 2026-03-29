@@ -135,4 +135,7 @@ Route::middleware([
 
     // Route สำหรับ Admin เพิ่มวัตถุดิบใหม่เข้า Table ingredients
     Route::post('/admin/stock/add', [StockController::class, 'storeIngredient'])->name('admin.stock.add');
+    Route::post('/stock/add-lot',[StockController::class,'addLot'])
+->name('stock.addLot');
+    Route::post('/admin/stock/update',[StockController::class,'updateStock'])->name('stock.update');
 });

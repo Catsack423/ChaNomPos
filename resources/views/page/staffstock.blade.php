@@ -1,6 +1,6 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/staffstock.css') }}">
-    
+
     <x-tagbar />
     @if(session('error'))
     <div class="alert alert-danger">
@@ -9,7 +9,7 @@
 @endif
     <div class="grid productcols">
         <div class="card" >
-            
+
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
                 <span style="font-size: 24px;"></span>
                 <h2 style=" margin: 0; font-weight: bold">จัดการสต็อกวัตถุดิบ</h2>
@@ -47,16 +47,16 @@
                             </td>
                             <td class="text-center">
                                 <div class="stock-action-group" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                    <input type="number" name="ingredients[{{$index}}][quantity]" 
+                                    <input type="number" name="ingredients[{{$index}}][quantity]"
                                         id="qty_{{ $index }}" class="qty-field" value="0"
                                         style="width: 100px; text-align: center; border-radius: 8px; border: 1px solid #ddd;">
-                                    
-                                    <button type="button" onclick="adjustInput('{{$index}}', 1)" 
+
+                                    <button type="button" onclick="adjustInput('{{$index}}', 1)"
                                         style="background: #4CAF50; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">▲</button>
-                                    
-                                    <button type="button" onclick="adjustInput('{{$index}}', -1)" 
+
+                                    <button type="button" onclick="adjustInput('{{$index}}', -1)"
                                         style="background: #F44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">▼</button>
-                                    
+
                                     </div>
                             </td>
                         </tr>

@@ -8,23 +8,99 @@ use App\Models\Inventory;
 use App\Models\InventoryLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Real_ingrediant;
+use App\Models\Product;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 class StockController extends Controller
 {
     // หน้าสำหรับ Admin: ดูสต็อกและ Log
     public function adminIndex()
     {
-        $ingredients = Ingredient::with('inventory')->get();
-        $logs = InventoryLog::with(['ingredient', 'user'])->latest()->limit(50)->get();
-        
-        return view('page.adminstock', compact('ingredients', 'logs'));
+        // 1. เคลียร์ล็อตที่หมดแล้วให้เป็น Soft Delete + เก็บ Log 'out'
+        $allLots = Real_ingrediant::all();
+        foreach ($allLots as $lot) {
+            if ($lot->remaining() <= 0) {
+                InventoryLog::create([
+                    'real_ingredient_id' => $lot->id,
+                    'user_id' => Auth::id() ?? 1,
+                    'action' => 'out',
+                    'quantity' => 0,
+                    'reason' => 'วัตถุดิบถูกใช้จนหมด (ตรวจสอบหน้า Admin Stock)',
+                    'created_at' => now()
+                ]);
+                $lot->delete();
+            }
+        }
+
+        $ingredients = Ingredient::with('real_ingredients')->get();
+
+        $activeLots = Real_ingrediant::with(['product', 'ingredient'])
+            ->where('in_use', 1)
+            ->get();
+        $products = Product::all();
+
+        $stockLots = Real_ingrediant::with(['product', 'ingredient'])
+            ->where('in_use', 0)
+            ->get();
+
+        $logs = InventoryLog::with(['real_ingredient.ingredient', 'user'])
+            ->orderBy('id', 'desc') // แก้ปัญหาเวลาเพี้ยน
+            ->limit(50)
+            ->get();
+
+        return view('page.adminstock', compact(
+            'ingredients',
+            'logs',
+            'products',
+            'activeLots',
+            'stockLots'
+        ));
     }
 
     // หน้าสำหรับ Staff
     public function staffIndex()
     {
-        $ingredients = Ingredient::with('inventory')->get();
-        return view('page.staffstock', compact('ingredients'));
+        // 1. เคลียร์ล็อตที่หมดแล้วเช่นกัน
+        $allLots = Real_ingrediant::all();
+        foreach ($allLots as $lot) {
+            if ($lot->remaining() <= 0) {
+                InventoryLog::create([
+                    'real_ingredient_id' => $lot->id,
+                    'user_id' => Auth::id() ?? 1,
+                    'action' => 'out',
+                    'quantity' => 0,
+                    'reason' => 'วัตถุดิบถูกใช้จนหมด (ตรวจสอบหน้า Staff)',
+                    'created_at' => now()
+                ]);
+                $lot->delete();
+            }
+        }
+
+        $ingredients = Ingredient::with(['real_ingredients.logs'])->get();
+
+        $activeLots = Real_ingrediant::with(['ingredient', 'logs'])
+            ->where('in_use', 1)
+            ->whereNull('deleted_at')
+            ->get();
+
+        $stockLots = Real_ingrediant::with('ingredient')
+            ->where('in_use', 0)
+            ->whereNull('deleted_at')
+            ->get();
+
+        $logs = InventoryLog::with(['real_ingredient.ingredient', 'user'])
+            ->orderBy('id', 'desc') // แก้ปัญหาเวลาเพี้ยน
+            ->take(10)
+            ->get();
+
+        return view('staffstock', compact(
+            'ingredients',
+            'activeLots',
+            'stockLots',
+            'logs'
+        ));
     }
 
     // ระบบอัปเดตสต็อก (รองรับปุ่มบวก/ลบ และการบันทึกรวม)
@@ -32,7 +108,7 @@ class StockController extends Controller
     {
         $request->validate([
             'ingredients' => 'required|array',
-            'ingredients.*.ingredient_id' => 'required|exists:inventories,ingredient_id',
+            'ingredients.*.ingredient_id' => 'required|exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|between:-999999,999999',
         ]);
 
@@ -41,56 +117,58 @@ class StockController extends Controller
         try {
             DB::transaction(function () use ($items) {
                 foreach ($items as $item) {
+
                     $qty = (float)($item['quantity'] ?? 0);
+
                     if ($qty == 0) continue;
 
-                    $inventory = Inventory::where('ingredient_id', $item['ingredient_id'])
-                        ->lockForUpdate()
+                    $lot = Real_ingrediant::where('ingredient_id', $item['ingredient_id'])
+                        ->where('in_use', 1)
                         ->first();
 
-                    if (!$inventory) {
-                        throw new \Exception("ไม่พบรหัสวัตถุดิบรหัส: " . $item['ingredient_id']);
+                    if (!$lot) {
+                        throw new \Exception("ไม่พบ LOT ที่เปิดใช้งานสำหรับรหัสวัตถุดิบ: " . $item['ingredient_id']);
                     }
 
-                    $currentInDB = (float)$inventory->quantity;
-                    if ($currentInDB < 0) $currentInDB = 0;
-
-                    // จัดการกรณีสั่งลด (Negative quantity)
-                    if ($qty < 0) {
-                        if ($currentInDB <= 0) {
-                            throw new \Exception("วัตถุดิบหมดสต็อกแล้ว ไม่สามารถลดเพิ่มได้");
-                        }
-
-                        // คำนวณการหักออกตามจริง (ถ้าสั่งหักมากกว่าที่มี ให้หักเท่าที่มี)
-                        $actualChange = (abs($qty) > $currentInDB) ? -$currentInDB : $qty;
-                        $newQty = $currentInDB + $actualChange;
-                        $logQty = abs($actualChange);
+                    // แก้ Logic การปรับสต็อกเพื่อป้องกันบั๊กหักเบิ้ล 2 รอบ
+                    if ($qty > 0) {
+                        // กรณีเพิ่ม (+): บวกเข้าฐาน Quantity แล้วสร้าง Log add 
+                        $lot->quantity += $qty;
+                        $lot->save();
+                        $action = 'add';
                     } else {
-                        // กรณีสั่งเพิ่ม
-                        $newQty = $currentInDB + $qty;
-                        $logQty = $qty;
+                        // กรณีลด (-): ห้ามแก้ฐาน Quantity! ให้สร้างเฉพาะ Log reduce 
+                        // เพราะฟังก์ชัน remaining() จะเอาไปหักลบออกให้เองโดยอัตโนมัติ
+                        $action = 'reduce';
                     }
 
-                    $inventory->quantity = $newQty;
-                    $inventory->save();
-
-                    // บันทึก Log โดยใช้ 'add' หรือ 'reduce' ตามโครงสร้าง DB ของคุณ
+                    // บันทึก Log การปรับสต็อก
                     InventoryLog::create([
-                        'ingredient_id' => $item['ingredient_id'],
+                        'real_ingredient_id' => $lot->id,
                         'user_id' => Auth::id(),
-                        'action' => $qty > 0 ? 'add' : 'reduce',
-                        'quantity' => $logQty,
-                        'reason' => 'ปรับปรุงสต็อกด้วยตนเอง',
+                        'action' => $action,
+                        'quantity' => abs($qty),
+                        'reason' => 'ปรับปรุงสต็อก (Manual)',
                         'created_at' => now()
                     ]);
+
+                    // ตรวจสอบทันทีว่าปรับลดแล้วของหมดไหม ถ้าหมดให้เคลียร์ทิ้ง
+                    if ($lot->remaining() <= 0) {
+                        InventoryLog::create([
+                            'real_ingredient_id' => $lot->id,
+                            'user_id' => Auth::id(),
+                            'action' => 'out',
+                            'quantity' => 0,
+                            'reason' => 'วัตถุดิบหมดจากการปรับปรุงสต็อก',
+                            'created_at' => now()
+                        ]);
+                        $lot->delete();
+                    }
                 }
             });
 
-            // ส่งกลับพร้อม Session Success เพื่อให้ SweetAlert ทำงาน
             return back()->with('success', 'ปรับปรุงสต็อกเรียบร้อยแล้ว');
-
         } catch (\Exception $e) {
-            // ส่งกลับพร้อม Session Error และข้อมูลที่กรอกค้างไว้
             return back()->withInput()->with('error', $e->getMessage());
         }
     }
@@ -107,11 +185,12 @@ class StockController extends Controller
             DB::transaction(function () use ($id) {
                 Inventory::where('ingredient_id', $id)->delete();
                 InventoryLog::where('ingredient_id', $id)->delete();
+                // ถ้ามี Real_ingrediant ที่ผูกไว้ อาจจะต้องการลบด้วย 
+                // Real_ingrediant::where('ingredient_id', $id)->delete();
                 Ingredient::destroy($id);
             });
 
             return back()->with('success', 'ลบรายการวัตถุดิบเรียบร้อยแล้ว');
-
         } catch (\Exception $e) {
             return back()->with('error', 'ไม่สามารถลบได้ เนื่องจากมีการใช้งานอยู่ในสูตรอาหารหรือระบบอื่น');
         }
@@ -122,38 +201,72 @@ class StockController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'unit' => 'required|string|max:50',
-            'initial_quantity' => 'required|numeric|min:0'
+            'unit' => 'required|string|max:50'
         ]);
 
         try {
-            DB::transaction(function () use ($request) {
-                $ingredient = Ingredient::create([
-                    'name' => $request->name,
-                    'unit' => $request->unit
-                ]);
-
-                Inventory::create([
-                    'ingredient_id' => $ingredient->id,
-                    'quantity' => $request->initial_quantity,
-                    
-                ]);
-
-                // เพิ่มการบันทึก Log สำหรับสต็อกเริ่มต้น
-                InventoryLog::create([
-                    'ingredient_id' => $ingredient->id,
-                    'user_id' => Auth::id(),
-                    'action' => 'add',
-                    'quantity' => $request->initial_quantity,
-                    'reason' => 'เพิ่มวัตถุดิบใหม่เข้าระบบ (สต็อกเริ่มต้น)',
-                    'created_at' => now()
-                ]);
-            });
+            Ingredient::create([
+                'name' => $request->name,
+                'unit' => $request->unit
+            ]);
 
             return back()->with('success', "เพิ่มวัตถุดิบ '{$request->name}' สำเร็จ");
-
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'เกิดข้อผิดพลาดในการเพิ่มข้อมูล: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
+    }
+
+    public function useIngredient($id)
+    {
+        $ingredient = Real_ingrediant::findOrFail($id);
+
+        $ingredient->in_use = 1;
+        // คำนวณวันหมดอายุหลังจากเปิดใช้งาน 2 วัน
+        $ingredient->expried = \Carbon\Carbon::now()->addDays(2);
+
+        $ingredient->save();
+
+        return back()->with('success', 'เปิดใช้งานวัตถุดิบแล้ว และตั้งวันหมดอายุเป็น 2 วันนับจากนี้');
+    }
+
+    public function addLot(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'ingredient_id' => 'required|exists:ingredients,id',
+            'quantity' => 'required|numeric|min:1',
+            'expired' => 'required|date',
+            'imgurl' => 'nullable|image'
+        ]);
+
+        $img = null;
+
+        if ($request->hasFile('imgurl')) {
+            $file = $request->file('imgurl');
+            $img = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('img'), $img);
+        }
+
+        $lot = Real_ingrediant::create([
+            'name' => $request->name,
+            'ingredient_id' => $request->ingredient_id,
+            'quantity' => $request->quantity,
+            'imgurl' => $img,
+            'expried' => $request->expired,
+            'in_use' => 0
+        ]);
+
+        InventoryLog::create([
+            'real_ingredient_id' => $lot->id,
+            'user_id' => Auth::id(),
+            'action' => 'import',
+            'quantity' => $lot->quantity,
+            'reason' => 'นำเข้าสินค้า Lot #' . $lot->id,
+            'created_at' => now()
+        ]);
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }
